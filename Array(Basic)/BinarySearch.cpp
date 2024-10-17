@@ -1,37 +1,37 @@
 #include <iostream>
 #include <vector>
 
-// å·¦é—­å³å¼€åŸåˆ™
-// è¿”å›æŒ‡å®šå…ƒç´ çš„ä¸‹æ ‡
+// ×ó±ÕÓÒ¿ªÔ­Ôò
+// ·µ»ØÖ¸¶¨ÔªËØµÄÏÂ±ê
 int BinarySearch(std::vector<int> &nums, int target)
 {
-    // å·¦é—­å³å¼€åŸåˆ™ï¼š[left, right]åŒºé—´ä¸­æ‰€æœ‰å€¼å‡åœ¨vectorå†…æœ‰æ•ˆ
+    // ×ó±ÕÓÒ¿ªÔ­Ôò£º[left, right]Çø¼äÖĞËùÓĞÖµ¾ùÔÚvectorÄÚÓĞĞ§
     int left = 0;
     int right = nums.size() - 1;
 
-    // left <= right, å› ä¸ºå½“left==rightæ—¶ï¼Œnums[left] == nums[right]æœ‰æ•ˆï¼Œæ­¤æ—¶æ˜¯æœ€åä¸€æ¬¡åˆ¤æ–­
+    // left <= right, ÒòÎªµ±left==rightÊ±£¬nums[left] == nums[right]ÓĞĞ§£¬´ËÊ±ÊÇ×îºóÒ»´ÎÅĞ¶Ï
     while (left <= right)
     {
-        // è®¡ç®—å‡ºä¸­é—´å€¼
+        // ¼ÆËã³öÖĞ¼äÖµ
         int mid = (left + right) / 2;
-        // åˆ¤æ–­æ˜¯å¦å–åˆ°æŒ‡å®šå€¼
-        if (nums[mid] == target) // ç›¸ç­‰â€”â€”è¿”å›
+        // ÅĞ¶ÏÊÇ·ñÈ¡µ½Ö¸¶¨Öµ
+        if (nums[mid] == target) // ÏàµÈ¡ª¡ª·µ»Ø
         {
-            return mid; // è¿”å›æŒ‡å®šå€¼ä¸‹æ ‡
+            return mid; // ·µ»ØÖ¸¶¨ÖµÏÂ±ê
         }
-        else if (nums[mid] > target) // ä¸­é—´å€¼è¾ƒå¤§â€”â€”targetä¸€å®šåœ¨ä¸­é—´å€¼å·¦è¾¹
+        else if (nums[mid] > target) // ÖĞ¼äÖµ½Ï´ó¡ª¡ªtargetÒ»¶¨ÔÚÖĞ¼äÖµ×ó±ß
         {
-            // å·¦é—­å³å¼€åŸåˆ™ï¼Œæ­¤æ—¶nums[mid]ä¸€å®šä¸æ˜¯target
+            // ×ó±ÕÓÒ¿ªÔ­Ôò£¬´ËÊ±nums[mid]Ò»¶¨²»ÊÇtarget
             right = mid - 1;
         }
-        else if (nums[mid] < target) // ä¸­é—´å€¼è¾ƒå°â€”â€”targetä¸€å®šåœ¨ä¸­é—´å€¼å³è¾¹
+        else if (nums[mid] < target) // ÖĞ¼äÖµ½ÏĞ¡¡ª¡ªtargetÒ»¶¨ÔÚÖĞ¼äÖµÓÒ±ß
         {
-            // å·¦é—­å³å¼€åŸåˆ™ï¼Œæ­¤æ—¶nums[mid]ä¸€å®šä¸æ˜¯target
+            // ×ó±ÕÓÒ¿ªÔ­Ôò£¬´ËÊ±nums[mid]Ò»¶¨²»ÊÇtarget
             left = mid + 1;
         }
     }
 
-    // çº¦å®šæ²¡æ‰¾åˆ°è¿”å›-1
+    // Ô¼¶¨Ã»ÕÒµ½·µ»Ø-1
     return -1;
 }
 
@@ -42,9 +42,9 @@ int main()
     std::vector<int> v{2, 3, 34, 23, 90, 36, 22, 123, 45};
     int pos = BinarySearch(v, target);
     if (pos != -1)
-        std::cout << "æ•°å€¼ä¸å­˜åœ¨" << std::endl;
+        std::cout << "ÊıÖµ²»´æÔÚ" << std::endl;
     else
-        std::cout << "æ•°å€¼å­˜åœ¨" << std::endl;
+        std::cout << "ÊıÖµ´æÔÚ" << std::endl;
 
     return 0;
 }
