@@ -18,7 +18,7 @@ int Array_Basic::BinarySearch(std::vector<int> &nums, int target, int flag)
         // int mid = (left + right) / 2;
         int mid = left + ((right - left) / 2); // 防止溢出——结果等效于上面的写法
         // 除以2也可以使用右移>>
-        // int mid = left + ((right - left) >> 2);
+        // int mid = left + ((right - left) >> 1);
         /*
          * 上面的步骤先算出固定不变的间隔值，再通过起始位置加上间隔值间接算出中间值位置
          *  具体步骤如下：
