@@ -5,7 +5,7 @@
 int Array_Basic::BinarySearch(std::vector<int> &nums, int target, int flag)
 {
     // 使用(void)强制转换防止编译器警告，flag在二分查找中没有意义
-    (void)flag;
+    (void) flag;
     std::cout << "[left, right]" << std::endl;
     // 左闭右闭原则：[left, right]区间中所有值均在vector内有效
     int left = 0;
@@ -49,7 +49,7 @@ int Array_Basic::BinarySearch(std::vector<int> &nums, int target, int flag)
 
 // 左闭右开原则
 // 返回指定元素的下标
-int Array_Basic::BinarySearch(std::vector<int>& nums, int target)
+int Array_Basic::BinarySearch(std::vector<int> &nums, int target)
 {
     std::cout << "[left, right)" << std::endl;
     // 左闭右开原则：[left, right)，此时当left==right时就是无效区间
@@ -60,16 +60,16 @@ int Array_Basic::BinarySearch(std::vector<int>& nums, int target)
     while (left < right)
     {
         int mid = (left + right) / 2;
-        if(nums[mid] == target) // 相等——返回
+        if (nums[mid] == target) // 相等——返回
         {
             return mid;
         }
-        else if(nums[mid] > target) // 中间值较大，则目标值一定在中间值右边
+        else if (nums[mid] > target) // 中间值较大，则目标值一定在中间值右边
         {
             // 左闭右开原则，此时mid的值是下一次的右边界，不包括mid的值
             right = mid;
         }
-        else if(nums[mid] < target) // 中间值较小，则目标值一定在中间值左边
+        else if (nums[mid] < target) // 中间值较小，则目标值一定在中间值左边
         {
             // 左边右开原则，此时mid的值是下一次的左边界，包括mid的值
             left = mid + 1;
@@ -81,24 +81,26 @@ int Array_Basic::BinarySearch(std::vector<int>& nums, int target)
 }
 
 // 力扣35.搜索插入位置
-class Solution35 {
+class Solution35
+{
 public:
-    int searchInsert(std::vector<int>& nums, int target) {
+    int searchInsert(std::vector<int> &nums, int target)
+    {
         int left = 0;
         int right = nums.size() - 1;
         int mid = 0;
-        while(left <= right)
+        while (left <= right)
         {
             mid = left + ((right - left) >> 1);
-            if(nums[mid] == target)
+            if (nums[mid] == target)
             {
                 return mid;
             }
-            else if(nums[mid] > target)
+            else if (nums[mid] > target)
             {
                 right = mid - 1;
             }
-            else if(nums[mid] < target)
+            else if (nums[mid] < target)
             {
                 left = mid + 1;
             }
@@ -122,9 +124,11 @@ public:
  * 判断中间元素mid*mid是否<=x，小于说明需要移动left，否则移动right
  * 怎么写：
  */
-class Solution69 {
+class Solution69
+{
 public:
-    int mySqrt(int x) {
+    int mySqrt(int x)
+    {
         // 暴力解法
         // size_t ans = 0;
         // for(;ans * ans <= x; ans++);
@@ -133,7 +137,7 @@ public:
         size_t right = x;
         size_t ans = 0;
         // 左闭右闭区间
-        while(left <= right)
+        while (left <= right)
         {
             size_t mid = left + ((right - left) >> 1);
             // 可能无法刚刚好等于
@@ -142,12 +146,12 @@ public:
             //     ans = mid;
             //     break;
             // }
-            if(mid * mid <= x) // 中间值较小
+            if (mid * mid <= x) // 中间值较小
             {
                 ans = mid;
                 left = mid + 1;
             }
-            else if(mid * mid > x) // 中间值较大
+            else if (mid * mid > x) // 中间值较大
             {
                 right = mid - 1;
             }
@@ -157,14 +161,16 @@ public:
 };
 
 // 类似69题型：力扣367.有效的完全平方数
-class Solution367 {
+class Solution367
+{
 public:
-    bool isPerfectSquare(int num) {
+    bool isPerfectSquare(int num)
+    {
         size_t left = 0;
         size_t right = num;
         size_t ans = 0;
         // 左闭右闭区间
-        while(left <= right)
+        while (left <= right)
         {
             size_t mid = left + ((right - left) >> 1);
             if (mid * mid <= num)
@@ -191,19 +197,25 @@ public:
  * 怎么找：首先判断target是否存在于原数组，不存在返回{-1, -1}，此处就可以直接使用二分查找，至少找到一个有效位置即可，
  * 如果存在则继续使用两次二分查找，第一次二分查找找左边界，第二次找右边界即可
  */
-class Solution34 {
+class Solution34
+{
 public:
     // 二分查找
-    int BinarySearch(std::vector<int>& nums, double target) {
+    int BinarySearch(std::vector<int> &nums, double target)
+    {
         int left = 0;
         int right = nums.size();
 
         // 左闭右开区间
-        while (left < right) {
+        while (left < right)
+        {
             int mid = left + ((right - left) >> 1);
-            if (nums[mid] <= target) {
+            if (nums[mid] <= target)
+            {
                 left = mid + 1;
-            } else {
+            }
+            else
+            {
                 right = mid;
             }
         }
@@ -212,18 +224,25 @@ public:
     }
 
     // 使用二分查找确定是否存在
-    bool isExist(std::vector<int>& nums, int target) {
+    bool isExist(std::vector<int> &nums, int target)
+    {
         int left = 0;
         int right = nums.size();
 
         // 左闭右开区间
-        while (left < right) {
+        while (left < right)
+        {
             int mid = left + ((right - left) >> 1);
-            if (nums[mid] < target) {
+            if (nums[mid] < target)
+            {
                 left = mid + 1;
-            } else if (nums[mid] > target){
+            }
+            else if (nums[mid] > target)
+            {
                 right = mid;
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
@@ -231,9 +250,10 @@ public:
         return false;
     }
 
-    std::vector<int> searchRange(std::vector<int>& nums, int target) {
+    std::vector<int> searchRange(std::vector<int> &nums, int target)
+    {
         // 判断是否存在
-        if(!isExist(nums, target))
+        if (!isExist(nums, target))
         {
             // 不存在直接返回
             return {-1, -1};
@@ -250,7 +270,9 @@ public:
 
 // 牛客类似题目：JZ53 数字在升序数组中出现的次数
 #include <vector>
-class SolutionJZ53 {
+
+class SolutionJZ53
+{
 public:
     /**
      * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
@@ -261,7 +283,7 @@ public:
      * @return int整型
      */
     // 二分查找
-    int BinarySearch(std::vector<int>& nums, double target)
+    int BinarySearch(std::vector<int> &nums, double target)
     {
         int left = 0;
         int right = nums.size() - 1;
@@ -269,7 +291,7 @@ public:
         while (left <= right)
         {
             int mid = left + ((right - left) >> 1);
-            if(nums[mid] <= target)
+            if (nums[mid] <= target)
             {
                 left = mid + 1;
             }
@@ -281,7 +303,8 @@ public:
 
         return left;
     }
-    int GetNumberOfK(std::vector<int>& nums, int k)
+
+    int GetNumberOfK(std::vector<int> &nums, int k)
     {
         // 左边界
         int leftHand = BinarySearch(nums, k - 0.5);
@@ -291,6 +314,7 @@ public:
         return rightHand - leftHand;
     }
 };
+
 // C语言版本
 namespace solutionJZ53
 {
@@ -304,25 +328,28 @@ namespace solutionJZ53
      * @return int整型
      */
     //二分查找
-    int BinarySearch(int* nums, int numsLen, double k)
+    int BinarySearch(int *nums, int numsLen, double k)
     {
         int left = 0;
         int right = numsLen - 1;
-        while (left <= right) {
+        while (left <= right)
+        {
             int mid = (left + right) / 2;
-            if(nums[mid] > k)
+            if (nums[mid] > k)
             {
                 right = mid - 1;
             }
-            else if (nums[mid] < k) {
+            else if (nums[mid] < k)
+            {
                 left = mid + 1;
             }
         }
         //返回 left 而不是 mid
         return left;
     }
-    int GetNumberOfK(int* nums, int numsLen, int k )
+
+    int GetNumberOfK(int *nums, int numsLen, int k)
     {
-        return BinarySearch(nums, numsLen, k+0.5)-BinarySearch(nums, numsLen, k-0.5);
+        return BinarySearch(nums, numsLen, k + 0.5) - BinarySearch(nums, numsLen, k - 0.5);
     }
 }
