@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
+#include <numeric>
 // #include <bits/stdc++.h>
 // 力扣209.长度最小的子数组
 // 暴力解法，见网站
@@ -219,4 +221,125 @@ public:
 };
 
 // 力扣1004.最大连续1的个数Ⅲ
+// 滑动窗口算法
+/* 本题的主要思路就是通过记录0的个数（变向达到翻转0的目的）来构建一个滑动窗口
+ * 本题需要注意使用一个计数器统计0的个数而非通过一个变量依次减少直到小于k
+ * 因为小于k不止一个情况，例如k=2时，tmpk可以有0,1两种情况都小于k，甚至逻辑上还有可能存在负数
+ * 但是考虑到大于k只需要考虑一次，尽管大于k有3,4...多种情况，但是第一次大于k只有一种情况
+ * 所以通过计数器改变统计当前0的个数
+ */
+class Solution1004
+{
+public:
+    int longestOnes(std::vector<int> &nums, int k)
+    {
+        int len = 0;
+        // int tmpk = k;
+        int zeroNum = 0;
 
+        for (int left = 0, right = 0; right < nums.size(); right++)
+        {
+            // 变量依次减少的方式——复杂且不易控制
+            // if(nums[end] == 0)
+            // {
+            //     tmpk--;
+            // }
+
+            // while(tmpk < k)
+            // {
+
+            // }
+
+            // 进窗口
+            if (nums[right] == 0)
+            {
+                zeroNum++;
+            }
+
+            // 更新窗口
+            while (zeroNum > k)
+            {
+                // 不要在循环内部更新结果
+                // len = max(len, right - left + 1);
+                if (nums[left++] == 0)
+                {
+                    zeroNum--;
+                }
+            }
+            // 注意，题目提到最多翻转k个0，所以可能出现翻转0,1,2,3...k
+            // 言外之意就是翻转0的个数小于等于k
+            // 故存在k特别大而zero一直不可能大于k的情况
+            // 综上，考虑在循环外部更新结果
+            len = std::max(len, right - left + 1);
+        }
+
+        return len;
+    }
+};
+
+// 力扣1658.将x减到0的最小操作数
+class Solution {
+public:
+    int minOperations(std::vector<int>& nums, int x) {
+        // 正难则反
+        // 因为本题既要考虑左侧又要考虑右侧，但是连续的部分是中间区域
+        //
+        // 所以本题就可以转换为“求出最长的一段区间（此时剩余区间就是最小的）其中的和大于等于数组和sumNums-x”
+        int target = std::accumulate(nums.begin(), nums.end(), 0) - x;
+        // 特判，当target刚好为0，说明此时最小的操作数的个数就是整个数组
+        if(target == 0)
+        {
+            return nums.size();
+        }
+        // 定义变量记录区间和
+        int sum = 0;
+        // 定义变量记录区间长度
+        int len = -1;
+        for(int start = 0, end = 0; end < nums.size(); end++)
+        {
+            // 进入窗口
+            sum += nums[end];
+
+            // 更新窗口
+            while(sum > target && start < end)
+            {
+                sum -= nums[start++];
+            }
+
+            // 可能存在数组中的数据无法使x减到0，自然也就无法算出sumNums-x == target的情况
+            if(sum == target)
+            {
+                len = std::max(len, end - start + 1);
+            }
+        }
+
+        // 返回最长区间的其他区间总长度即为所求
+        return len == -1 ? -1 : nums.size() - len;
+    }
+};
+
+// class Solution {
+// public:
+//     int minOperations(vector<int>& nums, int x) {
+//         int sum = 0;
+//         for (int a : nums)
+//             sum += a;
+//         int target = sum - x;
+//         // 细节问题
+//         if (target < 0)
+//             return -1;
+//         int ret = -1;
+//         for (int left = 0, right = 0, tmp = 0; right < nums.size(); right++) {
+//             tmp += nums[right];      // 进窗?
+//             while (tmp > target)     // 判断
+//                 tmp -= nums[left++]; // 出窗?
+//             if (tmp == target)       // 更新结果
+//                 ret = max(ret, right - left + 1);
+//         }
+//         // 此处包括了一种情况：当x与sumNums完全相等的时候，此时区间和永远大于target，因为target为0
+//         if (ret == -1)
+//             return ret;
+//         else
+//             return nums.size() - ret;
+//     }
+// };
