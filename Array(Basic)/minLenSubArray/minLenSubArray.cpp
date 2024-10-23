@@ -190,3 +190,33 @@ public:
         return ret == -1 ? std::string() : s.substr(ret, len);
     }
 };
+
+// 力扣3. 无重复字符的最长子串
+// 滑动窗口解法
+class Solution3
+{
+public:
+    int lengthOfLongestSubstring(std::string s)
+    {
+        std::unordered_map<char, int> m;
+        int len = 0;
+        for (int start = 0, end = 0; end < s.size(); end++)
+        {
+            // 进入窗口
+            // 向哈希表中添加字符，如果字符存在就改变计数器
+            m[s[end]]++;
+
+            // 更新窗口——目的是为了移除重复的元素
+            while (m[s[end]] > 1)
+            {
+                m.find(s[start++])->second--;
+            }
+            len = std::max(len, end - start + 1);
+        }
+
+        return len;
+    }
+};
+
+// 力扣1004.最大连续1的个数Ⅲ
+
