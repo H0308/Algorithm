@@ -349,3 +349,150 @@ public:
 //     }
 // };
 
+// 力扣438.找到字符串中所有字母异位词
+// 滑动窗口算法——定长窗口
+// 使用库版本
+class Solution438_1 {
+public:
+    std::unordered_map<char, int> ori, sub;
+    bool check() {
+        for (auto kv : sub) {
+            if (ori[kv.first] != kv.second) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    std::vector<int> findAnagrams(std::string s, std::string p) {
+        std::vector<int> v;
+        for(auto ch : p)
+        {
+            sub[ch - 'a']++;
+        }
+        for(int left = 0, right = 0; right < s.size(); right++)
+        {
+            // 进入窗口
+            ori[s[right] - 'a']++;
+
+            // 更新窗口
+            if(right - left + 1 > p.size())
+            {
+                ori[s[left] - 'a']--;
+                left++;
+            }
+
+            // 更新结果
+            if(check())
+            {
+                v.push_back(left);
+            }
+        }
+
+        return v;
+    }
+};
+
+// 直接定址法
+// 元素有限时，可以考虑使用直接定址法，减少时间和空间的消耗
+class Solution438_2 {
+public:
+    // 元素个数有限时，可以考虑使用直接定址法，减少时间和空间的消耗
+    int ori[26] = {0}, sub[26] = {0};
+    bool check() {
+        for(size_t i = 0; i < 26; i++)
+        {
+            if(ori[i] != sub[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    std::vector<int> findAnagrams(std::string s, std::string p) {
+        std::vector<int> v;
+        for(auto ch : p)
+        {
+            sub[ch - 'a']++;
+        }
+        for(int left = 0, right = 0; right < s.size(); right++)
+        {
+            // 进入窗口
+            ori[s[right] - 'a']++;
+
+            // 更新窗口
+            if(right - left + 1 > p.size())
+            {
+                ori[s[left] - 'a']--;
+                left++;
+            }
+
+            // 更新结果
+            if(check())
+            {
+                v.push_back(left);
+            }
+        }
+
+        return v;
+    }
+};
+
+// 优化比较逻辑版本
+class Solution438_3 {
+public:
+    // 元素个数有限时，可以考虑使用直接定址法，减少时间和空间的消耗
+    int ori[26] = {0}, sub[26] = {0};
+    std::vector<int> findAnagrams(std::string s, std::string p) {
+        std::vector<int> v;
+        // 存储有效字符个数
+        int count = 0;
+        for(auto ch : p)
+        {
+            sub[ch - 'a']++;
+        }
+        for(int left = 0, right = 0; right < s.size(); right++)
+        {
+            // 进入窗口
+            ori[s[right] - 'a']++;
+            // 维护有效字符个数
+            // 当字符进入窗口后，如果当前比较的字符存在与ori中，但不存在于sub中，那么说明不是有效字符，count不变
+            // 如果既存在于ori，也存在于sub中，说明是有效字符
+            // 注意需要小于等于而不是仅等于，因为可能存在重复字符
+            if(ori[s[right] - 'a'] <= sub[s[right] - 'a'])
+            {
+                count++;
+            }
+
+            // 更新窗口
+            if(right - left + 1 > p.size())
+            {
+                // 出窗口前维护有效字符个数
+                // 维护有效字符个数有三种情况：
+                // 1. 当出去的字符在哈希表ori中的个数比哈希表sub中的多，此时说明移出去的是多余的字符，不需要更新count
+                // 2. 当出去的字符在哈希表ori中的个数与哈希表sub中的相等，此时说明有效字符被移除，需要更新count
+                // 3. 当出去的字符在哈希表ori中不存在，但是在哈希表sub中存在，此时个数关系就是小于
+                //    当前这个情况就是说明sub中有重复的字符，此时ori中只出现了一次这个重复字符但是要被移除，
+                //    所以依旧是有效字符被移除，需要更新count，例如s="abacc" p="abbc"
+                if(ori[s[left] - 'a'] <= sub[s[left] - 'a'])
+                {
+                    count--;
+                }
+
+                ori[s[left] - 'a']--;
+                left++;
+            }
+
+            // 更新结果优化版
+            // 如果有效字符个数与p的长度相同，则一定是异位词
+            if(count == p.size())
+            {
+                v.push_back(left);
+            }
+        }
+
+        return v;
+    }
+};
