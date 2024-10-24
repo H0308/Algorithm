@@ -278,13 +278,17 @@ public:
 };
 
 // 力扣1658.将x减到0的最小操作数
-class Solution {
+/*
+ * 本题使用到正难则反的策略
+ * 因为本题既要考虑左侧又要考虑右侧，但是连续的部分是中间区域
+ * 所以本题就可以转换为“求出最长的一段区间（此时剩余区间就是最小的）其中的和大于等于数组和sumNums-x”
+ * 需要注意本题有两个特殊情况:
+ * 1. 当sumNums-x == 0时，此时最小的操作数的个数就是整个数组
+ * 2. 当sumNums-x < 0时，说明无法使x减到0，自然也就无法算出sumNums-x == target的情况
+ */
+class Solution1658 {
 public:
     int minOperations(std::vector<int>& nums, int x) {
-        // 正难则反
-        // 因为本题既要考虑左侧又要考虑右侧，但是连续的部分是中间区域
-        //
-        // 所以本题就可以转换为“求出最长的一段区间（此时剩余区间就是最小的）其中的和大于等于数组和sumNums-x”
         int target = std::accumulate(nums.begin(), nums.end(), 0) - x;
         // 特判，当target刚好为0，说明此时最小的操作数的个数就是整个数组
         if(target == 0)
@@ -318,9 +322,10 @@ public:
     }
 };
 
-// class Solution {
+// //其他写法
+// class Solution1658 {
 // public:
-//     int minOperations(vector<int>& nums, int x) {
+//     int minOperations(std::vector<int>& nums, int x) {
 //         int sum = 0;
 //         for (int a : nums)
 //             sum += a;
@@ -334,7 +339,7 @@ public:
 //             while (tmp > target)     // 判断
 //                 tmp -= nums[left++]; // 出窗?
 //             if (tmp == target)       // 更新结果
-//                 ret = max(ret, right - left + 1);
+//                 ret = std::max(ret, right - left + 1);
 //         }
 //         // 此处包括了一种情况：当x与sumNums完全相等的时候，此时区间和永远大于target，因为target为0
 //         if (ret == -1)
@@ -343,3 +348,4 @@ public:
 //             return nums.size() - ret;
 //     }
 // };
+
