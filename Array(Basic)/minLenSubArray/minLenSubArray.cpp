@@ -57,142 +57,6 @@ public:
     }
 };
 
-// 力扣904.水果成篮
-/*
- * 根据题目的描述，可以联想出本题涉及到一个窗口的进入和更新
- * 窗口进入：当前元素不存在时，插入到当前容器
- * 窗口更新：当元素个数超过两个时，考虑更新窗口直到重新满足条件
- * 本题并没有提到每一个元素只出现一次，但是需要确保容器中只有两个元素，所以需要用到可以去重的容器
- * 可以选择的结构：红黑树，容器对应的就是set和map，也可以考虑使用unordered_map或者unordered_set
- * 但是在更新窗口时，如果直接删除容器中的元素可能会因为每一个元素不止出现一次导致提前更新窗口
- * 例如[3,3,3,1,2,1,1,2,3,3,4]，如果直接使用一个红黑树容器，在插入时3,1,2，此时size为3需要更新窗口
- * 进入循环更新逻辑时，因为没有对元素进行计数，导致set直接删除start指向的第一个3，现在size重新回到2，循环提前结束
- * 所以可以考虑使用map或者unordered_map，如果元素不存在直接插入，否则只更新计数器
- * 最后，更新计数器不可以在更新窗口中更新，因为不能确定一定会出现3种水果
- */
-class Solution904
-{
-public:
-    int totalFruit(std::vector<int> &fruits)
-    {
-        int start = 0;
-        int len = 0;
-        std::unordered_map<int, int> m; // 使用unordered_map，查找的时间复杂度为O(1)
-        for (int end = 0; end < fruits.size(); end++)
-        {
-            // 确定元素是否存在，不存在就添加
-            m[fruits[end]]++;
-            // 当不满足条件：两个篮子中的水果种类大于2种时调整窗口
-            while (m.size() > 2)
-            {
-                // 直到指定元素的计数器为0时才删除，否则一直减少计数器
-                if ((--(m.find(fruits[start])->second)) == 0)
-                {
-                    m.erase(fruits[start]);
-                }
-                // 更新窗口
-                start++;
-            }
-
-            // 更新长度
-            len = std::max(len, end - start + 1);
-        }
-
-        return len;
-    }
-};
-
-// 力扣76.最小覆盖子串
-/*
- * 本题暴力思路：枚举出所有包含查找子串的所有字符的字符串，比较长度取出最小的子串
- * 本题可以考虑使用滑动窗口的方法
- * 为什么：根据暴力解法，每一次枚举所有包含的子串这个过程中涉及到一些重复的步骤，例如已经完全包含内容的子串被多次枚举
- * 而如果需要将这个过程中的枚举次数减少，策略就是找到最接近最优解的一个子串，整个遍历过程中，当一个指针在遍历s字符串时
- * 这个指针离起始位置的距离越来越远，此时与起始位置的指针就构成一个区间，而当刚好满足找到子串的条件时，就需要减小区间
- * 确保能找到更小一点的区间，而这个过程就正好满足不定长滑动窗口的过程
- * 怎么用：
- * 1. 题目提到了t字符串中的重复字符也需要完全匹配，所以需要使用哈希表来统计出现的次数
- * 2. 构建窗口：在t字符串的哈希表m中找s字符串中的字符，如果出现添加到另一个哈希表c中进行计数，方便更新窗口时比较
- * 3. 更新窗口：当哈希表m中字符的个数与c中对应的字符个数相同，说明一定存在子串包含t中的所有字符，此时就需要更新窗口
- *             否则一定不需要更新窗口。更新窗口的过程中需要记录当前子串的长度已经起始位置方便最后截取字符串，
- *             更新逻辑：让c中的字符个数与m中的字符个数不匹配，即类似于从c中依次移除出现于t中的字符
- * 4. 本题只需要考虑短的字符串中的字符即可，对于s字符串来说，其他字符是否存在不需要考虑
- *
- */
-// 滑动窗口
-class Solution76
-{
-public:
-    // 哈希表统计数量——定义为成员，方便checkNum函数调用
-    std::unordered_map<char, int> m, c;
-
-    // 判断t字符串中字符的个数是否与存在于c中的字符个数相同
-    int checkNum()
-    {
-        for (auto &ch: m)
-        {
-            // 如果个数不匹配直接返回false
-            if (c[ch.first] < ch.second)
-            {
-                return false;
-            }
-        }
-
-        // 循环走完说明个数一致
-        return true;
-    }
-
-    std::string minWindow(std::string s, std::string t)
-    {
-        // 定义s字符串的窗口端点
-        int l = 0, r = 0;
-        int len = INT_MAX;
-        int ret = -1;
-        // 统计字符串t中的字符和个数
-        for (auto &ch: t)
-        {
-            m[ch]++;
-        }
-
-        // 构建滑动窗口
-        int sz = s.size();
-        while (r < sz)
-        {
-            // 如果s中的字符存在于t中，就插入并计数——构建窗口
-            if (m.find(s[r]) != m.end())
-            {
-                c[s[r]]++;
-            }
-
-            // 更新窗口
-            // 何时更新：当找到了足够的字符与t中的字符匹配并且区间有效时
-            while (checkNum())
-            {
-                // 如何更新：进入循环说明一定已经找到了满足条件的子串
-                // 先更新长度，最后需要通过变量取出返回的子串
-                if (r - l + 1 < len)
-                {
-                    len = r - l + 1;
-                    // 更新用于截取子串的起点
-                    ret = l;
-                }
-
-                // 缩短窗口，判断是否还有满足条件的更短窗口
-                if (m.find(s[l]) != m.end())
-                {
-                    c[s[l]]--;
-                }
-
-                l++;
-            }
-
-            r++;
-        }
-
-        return ret == -1 ? std::string() : s.substr(ret, len);
-    }
-};
-
 // 力扣3. 无重复字符的最长子串
 // 滑动窗口解法
 class Solution3
@@ -349,6 +213,95 @@ public:
 //     }
 // };
 
+// 力扣904.水果成篮
+/*
+ * 根据题目的描述，可以联想出本题涉及到一个窗口的进入和更新
+ * 窗口进入：当前元素不存在时，插入到当前容器
+ * 窗口更新：当元素个数超过两个时，考虑更新窗口直到重新满足条件
+ * 本题并没有提到每一个元素只出现一次，但是需要确保容器中只有两个元素，所以需要用到可以去重的容器
+ * 可以选择的结构：红黑树，容器对应的就是set和map，也可以考虑使用unordered_map或者unordered_set
+ * 但是在更新窗口时，如果直接删除容器中的元素可能会因为每一个元素不止出现一次导致提前更新窗口
+ * 例如[3,3,3,1,2,1,1,2,3,3,4]，如果直接使用一个红黑树容器，在插入时3,1,2，此时size为3需要更新窗口
+ * 进入循环更新逻辑时，因为没有对元素进行计数，导致set直接删除start指向的第一个3，现在size重新回到2，循环提前结束
+ * 所以可以考虑使用map或者unordered_map，如果元素不存在直接插入，否则只更新计数器
+ * 最后，更新计数器不可以在更新窗口中更新，因为不能确定一定会出现3种水果
+ */
+class Solution904
+{
+public:
+    int totalFruit(std::vector<int> &fruits)
+    {
+        int start = 0;
+        int len = 0;
+        std::unordered_map<int, int> m; // 使用unordered_map，查找的时间复杂度为O(1)
+        for (int end = 0; end < fruits.size(); end++)
+        {
+            // 确定元素是否存在，不存在就添加
+            m[fruits[end]]++;
+            // 当不满足条件：两个篮子中的水果种类大于2种时调整窗口
+            while (m.size() > 2)
+            {
+                // 直到指定元素的计数器为0时才删除，否则一直减少计数器
+                if ((--(m.find(fruits[start])->second)) == 0)
+                {
+                    m.erase(fruits[start]);
+                }
+                // 更新窗口
+                start++;
+            }
+
+            // 更新长度
+            len = std::max(len, end - start + 1);
+        }
+
+        return len;
+    }
+};
+
+// 容器优化版
+/*
+ * 因为本题数组元素最大为10万，所以可以考虑直接用数组哈希表，减少时间和空间复杂度
+ */
+class Solution {
+public:
+    int totalFruit(std::vector<int>& fruits) {
+        int start = 0;
+        int len = 0;
+        // std::unordered_map<int, int> m; // 使用unordered_map，查找的时间复杂度为O(1)
+        int m[100001] = {0}; // 注意初始化，防止随机值导致错误
+        // 水果种类
+        int kinds = 0;
+        for (int end = 0; end < fruits.size(); end++) {
+            // 确定元素是否存在，不存在就添加
+            if(m[fruits[end]] == 0)
+            {
+                kinds++;
+            }
+            m[fruits[end]]++;
+            // 当不满足条件：两个篮子中的水果种类大于2种时调整窗口
+            while (kinds > 2) {
+                // 直到指定元素的计数器为0时才删除，否则一直减少计数器
+                if(m[fruits[start]] > 0)
+                {
+                    m[fruits[start]]--;
+                    if (m[fruits[start]] == 0)
+                    {
+                        kinds--;
+                    }
+                }
+
+                // 更新窗口
+                start++;
+            }
+
+            // 更新长度
+            len = std::max(len, end - start + 1);
+        }
+
+        return len;
+    }
+};
+
 // 力扣438.找到字符串中所有字母异位词
 // 滑动窗口算法——定长窗口
 // 使用库版本
@@ -498,6 +451,12 @@ public:
 };
 
 // 力扣30.串联所有单词的子串
+/*
+ * 本题主体思路与上题相同，但是需要注意的是，本题比较的不是字符，而是字符串
+ * 可以考虑使用整体法，因为题目提到了words中的每一个字符的长度相同，并且words数组的长度并不是很长
+ * 比较时取出s中长度与words中每一个字符串长度相同的子字符串比较，剩余的思路就和上题一样
+ */
+// 滑动窗口算法——定长
 class Solution30 {
 public:
     std::unordered_map<std::string, int> ori, sub;
@@ -520,7 +479,7 @@ public:
                 std::string str = s.substr(right, sz);
                 ori[str]++;
                 // 判断是否更新有效字符个数
-                // 先判断sub中有对应的字符串，再比较
+                // 先判断sub中有对应的字符串，再进行比较，否则当sub中没有指定的元素会进行插入，从而产生时间和空间消耗
                 if(sub.count(str) && ori[str] <= sub[str])
                 {
                     cnt++;
@@ -549,5 +508,233 @@ public:
             ori.clear();
         }
         return v;
+    }
+};
+
+
+// 力扣76.最小覆盖子串
+/*
+ * 本题暴力思路：枚举出所有包含查找子串的所有字符的字符串，比较长度取出最小的子串
+ * 本题可以考虑使用滑动窗口的方法
+ * 为什么：根据暴力解法，每一次枚举所有包含的子串这个过程中涉及到一些重复的步骤，例如已经完全包含内容的子串被多次枚举
+ * 而如果需要将这个过程中的枚举次数减少，策略就是找到最接近最优解的一个子串，整个遍历过程中，当一个指针在遍历s字符串时
+ * 这个指针离起始位置的距离越来越远，此时与起始位置的指针就构成一个区间，而当刚好满足找到子串的条件时，就需要减小区间
+ * 确保能找到更小一点的区间，而这个过程就正好满足不定长滑动窗口的过程
+ * 怎么用：
+ * 1. 题目提到了t字符串中的重复字符也需要完全匹配，所以需要使用哈希表来统计出现的次数
+ * 2. 构建窗口：在t字符串的哈希表m中找s字符串中的字符，如果出现添加到另一个哈希表c中进行计数，方便更新窗口时比较
+ * 3. 更新窗口：当哈希表sub中字符的个数与ori中对应的字符个数相同或者ori中的对应字符个数大于sub中字符的个数，说明一定存在子串包含t中的所有字符，此时就需要更新窗口
+ *             否则一定不需要更新窗口。更新窗口的过程中需要记录当前子串的长度已经起始位置方便最后截取字符串，注意一定要比较新的len和已经记录的len，
+ *             当新的len较小时再更新起始位置，否则会出现起始位置一直被更新，包括新len和旧len相同的情况
+ *             更新逻辑：让ori中的字符个数与sub中的字符个数不匹配，即类似于从ori中依次移除出现于t中的字符
+ * 4. 本题只需要考虑短的字符串中的字符即可，对于s字符串来说，其他字符是否存在不需要考虑（因为插入会有一定时间和空间消耗）
+ *
+ */
+// 滑动窗口
+class Solution76_1 {
+public:
+    std::unordered_map<char, int> ori, sub;
+    // 判断字符个数
+    bool check()
+    {
+        for(auto& kv : sub)
+        {
+            // 当ori中对应的字符个数少于sub中对应字符的个数时说明此时并不满足覆盖条件
+            if(ori[kv.first] < kv.second)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    std::string minWindow(std::string s, std::string t) {
+        int len = INT_MAX;
+        int start = 0;
+        // 统计t中字符出现的次数
+        for(auto& ch : t)
+        {
+            sub[ch]++;
+        }
+
+        for(int left = 0, right = 0; right < s.size(); right++)
+        {
+            // 进窗口
+            // ori[s[right]]++;
+            // 只有含有t中字符的时候才插入
+            if(sub.find(s[right]) != sub.end())
+            {
+                ori[s[right]]++;
+            }
+            // 更新窗口
+            while(check())
+            {
+                // 更新结果
+                // start = left;
+                // len = min(len, right - left + 1);
+                if(right - left + 1 < len)
+                {
+                    len = right - left + 1;
+                    start = left;
+                }
+                // ori[s[left]]--;
+                // 只有是t中的字符才删除
+                if(sub.find(s[left]) != sub.end())
+                {
+                    ori[s[left]]--;
+                }
+                left++;
+            }
+        }
+
+        return len == INT_MAX ? std::string() : s.substr(start, len);
+    }
+};
+
+// 优化版本
+/*
+ * 与前面类似，本次优化版本主要优化比较方式，利用一个变量来统计字符种类，此处不是字符个数
+ * 统计字符种类的逻辑与字符个数不同，统计种类时只需要保证出现的字符是t中的字符且对应字符出现的个数等于t中对应字符的个数就算一次种类更新，否则就不算
+ * 之所以要确保个数相等是因为t中可能存在重复字符，出现重复字符必须保证s中也有相同数量的重复字符，如果只统计第一次出现，则不能保证s中的重复字符数量与t中相同
+ * 而如果是统计字符个数只需要满足是t中的字符就更新
+ */
+class Solution76_2 {
+public:
+    std::unordered_map<char, int> ori, sub;
+    std::string minWindow(std::string s, std::string t) {
+        int len = INT_MAX;
+        int start = 0;
+        // 统计t中字符出现的次数
+        for(auto& ch : t)
+        {
+            sub[ch]++;
+        }
+
+        // 使用count统计字符种类
+        for(int left = 0, right = 0, count = 0; right < s.size(); right++)
+        {
+            // 进窗口
+            // ori[s[right]]++;
+            // 只有含有t中字符的时候才插入
+            if(sub.find(s[right]) != sub.end())
+            {
+                ori[s[right]]++;
+                // 统计字符种类
+                if(ori[s[right]] == sub[s[right]])
+                {
+                    count++;
+                }
+            }
+            // 更新窗口
+            while(count == sub.size())
+            {
+                // 更新结果
+                // start = left;
+                // len = min(len, right - left + 1);
+                if(right - left + 1 < len)
+                {
+                    len = right - left + 1;
+                    start = left;
+                }
+                // ori[s[left]]--;
+                // 只有是t中的字符才删除
+                if(sub.find(s[left]) != sub.end())
+                {
+                    // 更新计数器
+                    if(ori[s[left]] == sub[s[left]])
+                    {
+                        count--;
+                    }
+                    ori[s[left]]--;
+                }
+                left++;
+            }
+        }
+
+        return len == INT_MAX ? std::string() : s.substr(start, len);
+    }
+};
+
+// 容器优化版本
+/*
+ * 本题因为只含有字母，所以可以考虑使用一个数组形式的哈希表
+ */
+class Solution76_3 {
+public:
+    // unordered_map<char, int> ori, sub;
+    int ori[128] = {0}, sub[128] = {0};
+    // 判断字符个数
+    std::string minWindow(std::string s, std::string t) {
+        int len = INT_MAX;
+        int start = 0;
+        // 统计t中字符出现的次数
+        // 注意因为在函数中要比较种类，所以在映射开始之前需要先判断某个字符是不是第一次出现
+        // 如果是第一次出现种类计数器就更新，否则就不更新
+        // 种类计数器
+        int kinds = 0;
+        for(auto& ch : t)
+        {
+            // 第一次出现的字符，更新种类计数器
+            if(sub[ch] == 0)
+            {
+                kinds++;
+            }
+            sub[ch]++;
+        }
+
+        // 使用count统计字符种类
+        for(int left = 0, right = 0, count = 0; right < s.size(); right++)
+        {
+            // 进窗口
+            // ori[s[right]]++;
+            // 只有含有t中字符的时候才插入
+            // if(sub.find(s[right]) != sub.end())
+            // {
+            //     ori[s[right]]++;
+            //     // 统计字符种类
+            //     if(ori[s[right]] == sub[s[right]])
+            //     {
+            //         count++;
+            //     }
+            // }
+            ori[s[right]]++;
+            // 统计字符种类
+            if(ori[s[right]] == sub[s[right]])
+            {
+                count++;
+            }
+            // 更新窗口
+            while(count == kinds)
+            {
+                // 更新结果
+                // start = left;
+                // len = min(len, right - left + 1);
+                if(right - left + 1 < len)
+                {
+                    len = right - left + 1;
+                    start = left;
+                }
+                // ori[s[left]]--;
+                // 只有是t中的字符才删除
+                // if(sub.find(s[left]) != sub.end())
+                // {
+                //     // 更新计数器
+                //     if(ori[s[left]] == sub[s[left]])
+                //     {
+                //         count--;
+                //     }
+                //     ori[s[left]]--;
+                // }
+                // 更新计数器
+                if(ori[s[left]] == sub[s[left]])
+                {
+                    count--;
+                }
+                ori[s[left]]--;
+                left++;
+            }
+        }
+
+        return len == INT_MAX ? std::string() : s.substr(start, len);
     }
 };
