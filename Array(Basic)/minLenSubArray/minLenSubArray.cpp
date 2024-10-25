@@ -496,3 +496,58 @@ public:
         return v;
     }
 };
+
+// 力扣30.串联所有单词的子串
+class Solution30 {
+public:
+    std::unordered_map<std::string, int> ori, sub;
+    std::vector<int> findSubstring(std::string s, std::vector<std::string>& words) {
+        std::vector<int> v;
+        for(auto& str : words)
+        {
+            sub[str]++;
+        }
+        // 每个单词的长度
+        int sz = words[0].size();
+        // 控制滑动窗口执行的次数
+        for(int count = 0; count < sz; count++)
+        {
+            // 滑动窗口
+            // right+sz总共就是words的总长度，所以需要注意可以相等
+            for(int left = count, right = count, cnt = 0; right + sz <= s.size(); right += sz)
+            {
+                // 进入窗口
+                std::string str = s.substr(right, sz);
+                ori[str]++;
+                // 判断是否更新有效字符个数
+                // 先判断sub中有对应的字符串，再比较
+                if(sub.count(str) && ori[str] <= sub[str])
+                {
+                    cnt++;
+                }
+
+                // 更新窗口
+                if(right - left + 1 > sz * words.size())
+                {
+                    std::string tmp = s.substr(left, sz);
+                    // 更新计数器
+                    if(sub.count(tmp) &&ori[tmp] <= sub[tmp])
+                    {
+                        cnt--;
+                    }
+
+                    ori[tmp]--;
+                    left += sz;
+                }
+
+                // 更新结果
+                if(cnt == words.size())
+                {
+                    v.push_back(left);
+                }
+            }
+            ori.clear();
+        }
+        return v;
+    }
+};
