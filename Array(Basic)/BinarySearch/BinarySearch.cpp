@@ -197,7 +197,7 @@ public:
  * 怎么找：首先判断target是否存在于原数组，不存在返回{-1, -1}，此处就可以直接使用二分查找，至少找到一个有效位置即可，
  * 如果存在则继续使用两次二分查找，第一次二分查找找左边界，第二次找右边界即可
  */
-class Solution34
+class Solution34_1
 {
 public:
     // 二分查找
@@ -265,6 +265,61 @@ public:
         // 找右边界
         int rightHand = BinarySearch(nums, target + 0.5);
         return {leftHand, rightHand - 1};
+    }
+};
+
+// 直接找到左右边界
+class Solution34_2
+{
+public:
+    std::vector<int> searchRange(std::vector<int> &nums, int target)
+    {
+        // 处理边界问题
+        if (nums.size() == 0)
+        {
+            return {-1, -1};
+        }
+
+        // 找左端点——左闭右开区间
+        int left = 0, right = nums.size();
+        while (left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= target)
+            {
+                right = mid;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        // 如果left位置不是目标值，说明不存在target
+        if (left >= nums.size() || nums[left] != target)
+        {
+            return {-1, -1};
+        }
+        int begin = left;
+
+        // 找右端点——左闭右开
+        left = 0;
+        right = nums.size();
+        while (left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > target)
+            {
+                right = mid;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+
+        int last = left - 1;
+
+        return {begin, last};
     }
 };
 
@@ -353,3 +408,138 @@ namespace solutionJZ53
         return BinarySearch(nums, numsLen, k + 0.5) - BinarySearch(nums, numsLen, k - 0.5);
     }
 }
+
+// 力扣852.山脉数组的峰顶索引
+class Solution {
+public:
+    int peakIndexInMountainArray(std::vector<int>& nums) {
+        int left = 0;
+        int right = nums.size() - 1;
+        int ret = 0;
+        while(left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            // 根据题目条件“其中的值递增到一个峰值元素然后递减”，说明峰值之前的元素排列严格递增
+            // 所以只需要比较当前值是否比后一个值大就可以判断是否是峰值
+            if(nums[mid] > nums[mid + 1])
+            {
+                ret = mid;
+                right = mid - 1;
+            }
+            else if(nums[mid] < nums[mid + 1])
+            {
+                left = mid + 1;
+            }
+        }
+
+        return ret;
+
+        // 找数组最大值
+        // int maxIndex = 0;
+        // for(size_t i = 0 ; i < nums.size(); i++)
+        //     if(nums[i] > nums[maxIndex])
+        //         maxIndex = i;
+
+        // return maxIndex;
+    }
+};
+
+// 力扣162.寻找峰值
+class Solution162 {
+public:
+    int findPeakElement(std::vector<int>& nums) {
+        if(nums.size() == 1 || nums.size() > 1 && nums[0] > nums[1]) return 0;
+        int left = 0;
+        int right = nums.size() - 1;
+        while(left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if(mid + 1 < nums.size() && nums[mid] > nums[mid + 1])
+            {
+                right = mid;
+            }
+            else if(mid + 1 < nums.size() && nums[mid] < nums[mid + 1])
+            {
+                left = mid + 1;
+            }
+        }
+
+        return right;
+
+        // 找数组最大值
+        // int maxIndex = 0;
+        // for(size_t i = 0 ; i < nums.size(); i++)
+        //     if(nums[i] > nums[maxIndex])
+        //         maxIndex = i;
+
+        // return maxIndex;
+    }
+};
+
+// 力扣153.寻找旋转排序数组中的最小值
+class Solution153 {
+public:
+    int findMin(std::vector<int>& nums) {
+        int left = 0;
+        int right = nums.size();
+        int last = nums[left];
+        while(left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if(nums[mid] >= last)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid;
+            }
+        }
+
+        return left == nums.size() ? nums[0] : nums[left];
+
+        // 找数组最小值
+        // int minIndex = 0;
+        // for(size_t i = 0 ; i < nums.size(); i++)
+        //     if(nums[i] < nums[minIndex])
+        //         minIndex = i;
+
+        // return nums[minIndex];
+    }
+};
+
+// LCR 173.点名
+class SolutionLCR_173 {
+public:
+    int takeAttendance(std::vector<int>& nums) {
+        // 异或
+        // size_t i = 0;
+        // for(; i < records.size(); i++)
+        // {
+        //     if(records[i] ^ i)
+        //     {
+        //         break;
+        //     }
+        // }
+
+        // return i;
+
+        // 二分查找
+        int left = 0;
+        int right = nums.size() - 1;
+        while(left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            if(mid == nums[mid])
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        return left;
+    }
+};
