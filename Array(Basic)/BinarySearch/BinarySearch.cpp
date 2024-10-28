@@ -223,48 +223,25 @@ public:
         return left;
     }
 
-    // 使用二分查找确定是否存在
-    bool isExist(std::vector<int> &nums, int target)
-    {
-        int left = 0;
-        int right = nums.size();
-
-        // 左闭右开区间
-        while (left < right)
-        {
-            int mid = left + ((right - left) >> 1);
-            if (nums[mid] < target)
-            {
-                left = mid + 1;
-            }
-            else if (nums[mid] > target)
-            {
-                right = mid;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     std::vector<int> searchRange(std::vector<int> &nums, int target)
     {
-        // 判断是否存在
-        if (!isExist(nums, target))
-        {
-            // 不存在直接返回
-            return {-1, -1};
-        }
-
         // 存在则继续
         // 找左边界
         int leftHand = BinarySearch(nums, target - 0.5);
         // 找右边界
         int rightHand = BinarySearch(nums, target + 0.5);
-        return {leftHand, rightHand - 1};
+        // 判断target是否存在于nums中
+
+        // if(leftHand >= nums.size() || nums[leftHand] != target)
+        // {
+        //     return {-1, -1};
+        // }
+        // return {leftHand, rightHand - 1};
+
+        // 上面的代码也可以按照下面的形式写，但是注意不可以省略指定类型的vector<int>，因为此时编译器无法确定{-1, -1}和{leftHand, rightHand - 1}是否是同一个类型
+        return leftHand >= nums.size() || nums[leftHand] != target
+                   ? std::vector<int>{-1, -1}
+                   : std::vector<int>{leftHand, rightHand - 1};
     }
 };
 
@@ -274,49 +251,49 @@ class Solution34_2
 public:
     std::vector<int> searchRange(std::vector<int> &nums, int target)
     {
-        // 处理边界问题
-        if (nums.size() == 0)
-        {
-            return {-1, -1};
-        }
+        int left = 0;
+        int right = nums.size();
 
-        // 找左端点——左闭右开区间
-        int left = 0, right = nums.size();
+        // 左闭右开区间找左端点
         while (left < right)
         {
             int mid = left + (right - left) / 2;
-            if (nums[mid] >= target)
-            {
-                right = mid;
-            }
-            else
+            // <target和>=target
+            if (nums[mid] < target)
             {
                 left = mid + 1;
             }
+            else
+            {
+                right = mid;
+            }
         }
-        // 如果left位置不是目标值，说明不存在target
+        // 判断当前left是否为目标值以及是否存在越界
         if (left >= nums.size() || nums[left] != target)
         {
             return {-1, -1};
         }
+        // 否则记录当前left
         int begin = left;
 
-        // 找右端点——左闭右开
+        // 左闭右开区间找右端点
         left = 0;
         right = nums.size();
         while (left < right)
         {
             int mid = left + (right - left) / 2;
-            if (nums[mid] > target)
-            {
-                right = mid;
-            }
-            else
+            // <=target和>target
+            if (nums[mid] <= target)
             {
                 left = mid + 1;
             }
+            else
+            {
+                right = mid;
+            }
         }
 
+        // 记录右端点的位置
         int last = left - 1;
 
         return {begin, last};
@@ -410,83 +387,118 @@ namespace solutionJZ53
 }
 
 // 力扣852.山脉数组的峰顶索引
-class Solution {
+// 暴力解法
+// 找数组最大值
+class Solution852_1
+{
 public:
-    int peakIndexInMountainArray(std::vector<int>& nums) {
+    int peakIndexInMountainArray(std::vector<int> &nums)
+    {
+        int maxIndex = 0;
+        for (size_t i = 0; i < nums.size(); i++)
+            if (nums[i] > nums[maxIndex])
+                maxIndex = i;
+
+        return maxIndex;
+    }
+};
+
+// 二分查找
+class Solution852_2
+{
+public:
+    int peakIndexInMountainArray(std::vector<int> &nums)
+    {
         int left = 0;
-        int right = nums.size() - 1;
-        int ret = 0;
-        while(left <= right)
+        int right = nums.size();
+
+        while (left < right)
         {
             int mid = left + (right - left) / 2;
-            // 根据题目条件“其中的值递增到一个峰值元素然后递减”，说明峰值之前的元素排列严格递增
-            // 所以只需要比较当前值是否比后一个值大就可以判断是否是峰值
-            if(nums[mid] > nums[mid + 1])
-            {
-                ret = mid;
-                right = mid - 1;
-            }
-            else if(nums[mid] < nums[mid + 1])
+            if (nums[mid] < nums[mid + 1])
             {
                 left = mid + 1;
             }
+            else
+            {
+                right = mid;
+            }
         }
 
-        return ret;
-
-        // 找数组最大值
-        // int maxIndex = 0;
-        // for(size_t i = 0 ; i < nums.size(); i++)
-        //     if(nums[i] > nums[maxIndex])
-        //         maxIndex = i;
-
-        // return maxIndex;
+        return left;
     }
 };
 
 // 力扣162.寻找峰值
-class Solution162 {
+// 暴力解法
+class Solution162_1
+{
 public:
-    int findPeakElement(std::vector<int>& nums) {
-        if(nums.size() == 1 || nums.size() > 1 && nums[0] > nums[1]) return 0;
+    int findPeakElement(std::vector<int> &nums)
+    {
+        // 找数组最小值
+        int maxIndex = 0;
+        for (size_t i = 0; i < nums.size(); i++)
+            if (nums[i] > nums[maxIndex])
+                maxIndex = i;
+
+        return maxIndex;
+    }
+};
+
+// 二分查找
+class Solution162_2
+{
+public:
+    int findPeakElement(std::vector<int> &nums)
+    {
         int left = 0;
-        int right = nums.size() - 1;
-        while(left < right)
+        int right = nums.size();
+
+        while (left < right)
         {
             int mid = left + (right - left) / 2;
-            if(mid + 1 < nums.size() && nums[mid] > nums[mid + 1])
-            {
-                right = mid;
-            }
-            else if(mid + 1 < nums.size() && nums[mid] < nums[mid + 1])
+            if (mid + 1 < nums.size() && nums[mid] < nums[mid + 1])
             {
                 left = mid + 1;
             }
+            else
+            {
+                right = mid;
+            }
         }
 
-        return right;
-
-        // 找数组最大值
-        // int maxIndex = 0;
-        // for(size_t i = 0 ; i < nums.size(); i++)
-        //     if(nums[i] > nums[maxIndex])
-        //         maxIndex = i;
-
-        // return maxIndex;
+        return left;
     }
 };
 
 // 力扣153.寻找旋转排序数组中的最小值
-class Solution153 {
+// 暴力解法
+class Solution153_1 {
 public:
     int findMin(std::vector<int>& nums) {
+        // 找数组最小值
+        int minIndex = 0;
+        for(size_t i = 0 ; i < nums.size(); i++)
+            if(nums[i] < nums[minIndex])
+                minIndex = i;
+
+        return nums[minIndex];
+    }
+};
+
+// 二分查找
+class Solution153_2 {
+public:
+    int findMin(const std::vector<int>& nums)
+    {
         int left = 0;
         int right = nums.size();
-        int last = nums[left];
-        while(left < right)
+        int last = nums[right - 1];
+        while (left < right)
         {
             int mid = left + (right - left) / 2;
-            if(nums[mid] >= last)
+            if (nums[mid] > last)
             {
                 left = mid + 1;
             }
@@ -496,47 +508,120 @@ public:
             }
         }
 
-        return left == nums.size() ? nums[0] : nums[left];
-
-        // 找数组最小值
-        // int minIndex = 0;
-        // for(size_t i = 0 ; i < nums.size(); i++)
-        //     if(nums[i] < nums[minIndex])
-        //         minIndex = i;
-
-        // return nums[minIndex];
+        return nums[left];
     }
 };
 
 // LCR 173.点名
-class SolutionLCR_173 {
+// 暴力解法
+class SolutionLCR173_1
+{
 public:
-    int takeAttendance(std::vector<int>& nums) {
-        // 异或
-        // size_t i = 0;
-        // for(; i < records.size(); i++)
-        // {
-        //     if(records[i] ^ i)
-        //     {
-        //         break;
-        //     }
-        // }
+    int takeAttendance(std::vector<int>& records)
+    {
+        size_t i = 0;
+        for(; i <= records.size(); i++)
+        {
+            // 缺失最后一个值
+            if(i == records.size())
+            {
+                return records.size();
+            }
+            else if(records[i] != i)
+            {
+                break;
+            }
+        }
 
-        // return i;
+        return i;
+    }
+};
 
-        // 二分查找
+// 位运算
+class SolutionLRC173_2
+{
+public:
+    int takeAttendance(std::vector<int>& records)
+    {
+        int ret = 0;
+        for(size_t i = 0; i <= records.size(); i++)
+        {
+            if(i == records.size())
+            {
+                return records.size();
+            }
+            else if(records[i] ^ i)
+            {
+                ret = i;
+                break;
+            }
+        }
+
+        return ret;
+    }
+};
+
+// 哈希表
+class SolutionLCR173_3
+{
+public:
+    int takeAttendance(std::vector<int>& records)
+    {
+        int hash[10001] = {0};
+
+        for(auto num : records)
+        {
+            hash[num]++;
+        }
+
+        // 遍历哈希表找到为0位置的下标
+        int ret = 0;
+        for(size_t i = 0; i < 10001; i++)
+        {
+            if(!hash[i])
+            {
+                ret = i;
+                break;
+            }
+        }
+
+        return ret;
+    }
+};
+
+// 等差数列
+class SolutionLCR173_4
+{
+public:
+    int takeAttendance(std::vector<int>& records)
+    {
+        return [&]() -> int{
+            int sum = (records.size() + 0) * (records.size() + 1)/2;
+            return sum;
+        }() -
+        std::accumulate(records.begin(), records.end(), 0);
+    }
+};
+
+// 二分查找
+class SolutionLCR173_5
+{
+public:
+    int takeAttendance(std::vector<int>& nums)
+    {
         int left = 0;
-        int right = nums.size() - 1;
-        while(left <= right)
+        int right = nums.size();
+
+        while(left < right)
         {
             int mid = left + (right - left) / 2;
-            if(mid == nums[mid])
+            if(nums[mid] == mid)
             {
                 left = mid + 1;
             }
             else
             {
-                right = mid - 1;
+                right = mid;
             }
         }
 

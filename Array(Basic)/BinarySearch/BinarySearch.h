@@ -6,6 +6,7 @@
 #define BINARYSEARCH_H
 #include <iostream>
 #include <vector>
+#include <numeric>
 namespace Array_Basic
 {
     // ЖўЗжВщевЃЌзѓБегвБе
