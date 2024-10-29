@@ -226,7 +226,7 @@ public:
  * 所以可以考虑使用map或者unordered_map，如果元素不存在直接插入，否则只更新计数器
  * 最后，更新计数器不可以在更新窗口中更新，因为不能确定一定会出现3种水果
  */
-class Solution904
+class Solution904_1
 {
 public:
     int totalFruit(std::vector<int> &fruits)
@@ -262,7 +262,7 @@ public:
 /*
  * 因为本题数组元素最大为10万，所以可以考虑直接用数组哈希表，减少时间和空间复杂度
  */
-class Solution {
+class Solution904_2 {
 public:
     int totalFruit(std::vector<int>& fruits) {
         int start = 0;
