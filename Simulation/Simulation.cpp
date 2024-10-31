@@ -5,21 +5,22 @@
 #include <vector>
 using namespace std;
 
-// Á¦¿Û59.ÂİĞı¾ØÕó II
-class Solution59
+// åŠ›æ‰£59.èºæ—‹çŸ©é˜µ II
+// å†™æ³•1
+class Solution59_1
 {
 public:
     vector<vector<int>> generateMatrix(int n)
     {
-        // ¿ØÖÆºáÏò×ø±êºÍ×İÏò×ø±ê
+        // æ§åˆ¶æ¨ªå‘åæ ‡å’Œçºµå‘åæ ‡
         int startx = 0, starty = 0;
-        // ¿ØÖÆĞĞºÍÁĞ
+        // æ§åˆ¶è¡Œå’Œåˆ—
         int row = 0, col = 0;
-        // ¿ØÖÆÆ«ÒÆÁ¿
+        // æ§åˆ¶åç§»é‡
         int offset = 1;
-        // ¿ØÖÆÌî³äÊıÖµ
+        // æ§åˆ¶å¡«å……æ•°å€¼
         int count = 1;
-        // ½á¹û¾ØÕó
+        // ç»“æœçŸ©é˜µ
         vector<vector<int>> ret(n);
         for (size_t i = 0; i < n; i++)
         {
@@ -28,46 +29,46 @@ public:
 
         // vector<vector<int>> ret(n, vector<int>(n, 0));
 
-        // ¿ØÖÆÂÖ×ªÈ¦Êı
+        // æ§åˆ¶è½®è½¬åœˆæ•°
         int cycle = n / 2;
         while (cycle--)
         {
-            // ×ó±ÕÓÒ¿ª·½Ê½¿ØÖÆÃ¿Ìõ±ß
-            // ´¦ÀíºáÏòµÚÒ»Ìõ±ß
+            // å·¦é—­å³å¼€æ–¹å¼æ§åˆ¶æ¯æ¡è¾¹
+            // å¤„ç†æ¨ªå‘ç¬¬ä¸€æ¡è¾¹
             for (col = starty; col < n - offset; col++)
             {
-                // Ìî³äÊıÖµ
+                // å¡«å……æ•°å€¼
                 ret[startx][col] = count++;
             }
 
-            // ´¦Àí×İÏòµÚÒ»Ìõ±ß
+            // å¤„ç†çºµå‘ç¬¬ä¸€æ¡è¾¹
             for (row = startx; row < n - offset; row++)
             {
-                // Ìî³äÊıÖµ
+                // å¡«å……æ•°å€¼
                 ret[row][col] = count++;
             }
 
-            // ´¦ÀíºáÏòµÚ¶şÌõ±ß
+            // å¤„ç†æ¨ªå‘ç¬¬äºŒæ¡è¾¹
             for (; col > starty; col--)
             {
-                // Ìî³äÊıÖµ
+                // å¡«å……æ•°å€¼
                 ret[row][col] = count++;
             }
 
-            // ´¦Àí×İÏòµÚ¶şÌõ±ß
+            // å¤„ç†çºµå‘ç¬¬äºŒæ¡è¾¹
             for (; row > startx; row--)
             {
-                // Ìî³äÊıÖµ
+                // å¡«å……æ•°å€¼
                 ret[row][col] = count++;
             }
 
-            // ¿ØÖÆÈ¦
+            // æ§åˆ¶åœˆ
             startx++;
             starty++;
             offset++;
         }
 
-        // Èç¹ûnÎªÆæÊıÊ±Ìî³äÖĞ¼äµÄÊıÖµ
+        // å¦‚æœnä¸ºå¥‡æ•°æ—¶å¡«å……ä¸­é—´çš„æ•°å€¼
         if (n % 2)
             ret[startx][starty] = count;
 
@@ -75,18 +76,49 @@ public:
     }
 };
 
-// Á¦¿Û54.ÂİĞı¾ØÕó
+// å†™æ³•2_1
+class Solution59_2 
+{
+public:
+    vector<vector<int>> generateMatrix(int n) 
+{
+        // å¤„ç†ç»“æœ
+        vector<vector<int>> ret(n);
+        for(auto& v : ret) v.resize(n);
+        int count = 1;
+        int left = 0, top = 0;
+        int right = n - 1, bottom = n - 1;
+        while(left <= right && top <= bottom) {
+            for(int i = left; i <= right; i++) 
+                ret[top][i] = count++;
+            top++;
+            for(int i = top; i <= bottom; i++)
+                ret[i][right] = count++;
+            right--;
+            for(int i = right; i >= left; i--)
+                ret[bottom][i] = count++;
+            bottom--;
+            for(int i = bottom; i >= top; i--)
+                ret[i][left] = count++;
+            left++;
+        }
+        
+        return ret;
+    }
+};
+
+// åŠ›æ‰£54.èºæ—‹çŸ©é˜µ
 class Solution54
 {
 public:
     vector<int> spiralOrder(vector<vector<int>> &matrix)
     {
-        // ´¦Àí½á¹û
+        // å¤„ç†ç»“æœ
         vector<int> ret;
-        // »ñÈ¡ĞĞºÍÁĞ
+        // è·å–è¡Œå’Œåˆ—
         int m = matrix.size();
         int n = matrix[0].size();
-        // ¶¨ÒåÉÏÏÂ×óÓÒ±ß
+        // å®šä¹‰ä¸Šä¸‹å·¦å³è¾¹
         int left = 0;
         int right = n - 1;
         int top = 0;
@@ -94,36 +126,36 @@ public:
 
         while (top <= bottom && left <= right)
         {
-            // ´¦ÀíµÚÒ»ĞĞ
+            // å¤„ç†ç¬¬ä¸€è¡Œ
             for (int i = left; i <= right; i++)
             {
                 ret.push_back(matrix[left][i]);
             }
-            // µÚÒ»ĞĞ´¦ÀíÍê±Ï
+            // ç¬¬ä¸€è¡Œå¤„ç†å®Œæ¯•
             top++;
 
-            // ´¦ÀíµÚÒ»ÁĞ
+            // å¤„ç†ç¬¬ä¸€åˆ—
             for (int i = top; i <= bottom; i++)
             {
                 ret.push_back(matrix[i][right]);
             }
-            // µÚÒ»ÁĞ´¦ÀíÍê±Ï
+            // ç¬¬ä¸€åˆ—å¤„ç†å®Œæ¯•
             right--;
 
-            // ´¦ÀíµÚ¶şĞĞ
-            // ĞèÒªÅĞ¶ÏÊÇ·ñ»¹ÓĞµÚ¶şĞĞ
+            // å¤„ç†ç¬¬äºŒè¡Œ
+            // éœ€è¦åˆ¤æ–­æ˜¯å¦è¿˜æœ‰ç¬¬äºŒè¡Œ
             if (top <= bottom)
             {
                 for (int i = right; i >= left; i--)
                 {
                     ret.push_back(matrix[bottom][i]);
                 }
-                // µÚ¶şĞĞ´¦ÀíÍê±Ï
+                // ç¬¬äºŒè¡Œå¤„ç†å®Œæ¯•
                 bottom--;
             }
 
-            // ´¦ÀíµÚ¶şÁĞ
-            // ĞèÒªÅĞ¶ÏÊÇ·ñ»¹ÓĞµÚ¶şÁĞ
+            // å¤„ç†ç¬¬äºŒåˆ—
+            // éœ€è¦åˆ¤æ–­æ˜¯å¦è¿˜æœ‰ç¬¬äºŒåˆ—
             if (left <= right)
             {
                 for (int i = bottom; i >= top; i--)
