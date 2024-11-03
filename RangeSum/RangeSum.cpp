@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 using namespace std;
 
 // 卡码网KamaCoder.区间和：暴力解法
@@ -189,3 +190,196 @@ int mainDP35()
         }
     }
 }
+
+// 力扣724.寻找数组的中心下标
+// 解法1：直接使用前缀和数组
+/*
+ * 本题需要利用到前缀和数组，求出前缀和数组后，遍历前缀和数组，
+ * 如果找到一个下标i，满足sum[i-1] == sum[n] - sum[i]，则返回i-1，否则返回-1
+ * 注意，前缀和的有效元素下标是从1开始的，所以返回的下标需要减1
+ */
+class Solution724_1
+{
+public:
+    int pivotIndex(vector<int> &nums)
+    {
+        vector<int> sum(nums.size() + 1);
+        // 求出前缀和数组
+        for (int i = 1; i <= nums.size(); i++)
+        {
+            sum[i] = nums[i - 1] + sum[i - 1];
+        }
+
+        // 使用前缀和数组
+        int index = 0;
+        int back = sum[sum.size() - 1];
+        for (int i = 1; i < sum.size(); i++)
+        {
+            if (back - sum[i] == sum[i - 1])
+            {
+                index = i;
+                break;
+            }
+        }
+
+        return index - 1 == nums.size() ? -1 : index - 1;
+    }
+};
+
+// 解法2：前缀和数组与后缀和数组
+/*
+ * 使用两个数组分别构建前缀和与后缀和，因为需要找的中心下标的值在判断过程中是不包括的
+ * 所以可以考虑计算前缀和时只考虑[0, i - 1]区间的值，为了形成错位并且保证不出现越界问题
+ * 需要满足前缀和数组第一个元素为0
+ * 与前缀和数组一样，后缀和数组也不需要考虑第i个位置的值，但是后缀和是从右侧向左侧进行计算
+ * 所以只需要考虑区间[i + 1, n - 1]中的元素之和即可，
+ * 后缀和数组的左侧第一个元素就代表右侧区间[i + 1, n - 1]所有元素的和
+ * 注意，本题的前缀和数组和后缀和数组与原数组均是nums.size的长度
+ * 得出递推公式：
+ * 前缀和prefix[i] = prefix[i - 1] + nums[i - 1]，其中i从1开始，prefix[0] = 0
+ * 后缀和suffix[i] = suffix[i + 1] + nums[i + 1]，其中i从nums.size() - 1开始，suffix[nums.size() - 1] = 0
+ */
+class Solution724_2
+{
+public:
+    int pivotIndex(vector<int> &nums)
+    {
+        vector<int> prefix(nums.size());
+        vector<int> suffix(nums.size());
+
+        // 构建前缀和
+        // 因为只需要考虑[0, i - 1]区间中的值，所以第i位的值可以不用考虑
+        // 当前情况下，前缀和数组的一个元素为0
+        // 因为当i=0时，区间为[0, -1]，是一个不存在的区间
+        for (int i = 1; i < nums.size(); i++)
+            prefix[i] = nums[i - 1] + prefix[i - 1];
+        // 构建后缀和
+        // 因为只需要考虑[i + 1, size - 1]区间中的值，所以第i位的值可以不用考虑
+        // 为了形成错位，需要将suffix[size-1]置为0
+        for (int i = nums.size() - 2; i >= 0; i--)
+            suffix[i] = nums[i + 1] + suffix[i + 1];
+
+        // 使用前缀和与后缀和
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (suffix[i] == prefix[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+};
+
+// 力扣238.除自身以外数组的乘积
+/*
+ * 本题与上题思路基本一样，使用两个数组，分别表示前缀积和后缀积
+ */
+class Solution238
+{
+public:
+    vector<int> productExceptSelf(vector<int> &nums)
+    {
+        // 处理结果
+        vector<int> ret;
+
+        // 前缀积数组
+        vector<int> prefix(nums.size(), 1);
+        // 后缀积数组
+        vector<int> suffix(nums.size(), 1);
+
+        // 构建前缀积数组
+        for (int i = 1; i < nums.size(); i++)
+            prefix[i] = prefix[i - 1] * nums[i - 1];
+
+        // 构建后缀积数组
+        for (int i = nums.size() - 2; i >= 0; i--)
+            suffix[i] = suffix[i + 1] * nums[i + 1];
+
+        for (int i = 0; i < nums.size(); i++)
+            ret.push_back(prefix[i] * suffix[i]);
+
+        return ret;
+    }
+};
+
+// 力扣560.和为k的子数组
+// 错误：滑动窗口
+/*
+ * 本题第一反应是使用滑动窗口来解决，但是本题数组中的元素涉及到负数，
+ * 导致在遍历过程中不满足单调性，从而会产生遗漏情况，所以不可以使用滑动窗口算法解决
+ */
+class Solution560_false
+{
+public:
+    int subarraySum(vector<int> &nums, int k)
+    {
+        int sum = 0;
+        int count = 0;
+        for (int left = 0, right = 0; right < nums.size(); right++)
+        {
+            // 进窗口
+            sum += nums[right];
+
+            // 更新窗口
+            while (sum >= k && left <= right)
+            {
+                if (sum == k)
+                {
+                    count++;
+                }
+                sum -= nums[left++];
+            }
+        }
+
+        return count;
+    }
+};
+
+// 前缀和+哈希表
+/*
+ * 本题要找到和为k的子数组，最简单的方法就是暴力枚举，但是其时间复杂度较高，
+ * 此时如何结合前缀和解决就是解题关键。
+ * 考虑使用一种思路：找到以i结尾的和为k的子数组
+ * 为什么使用这种思路：以i结尾可以保证在前缀和数组中i-1位置一定是前面所有元素之和
+ * 而题目要求和为k的子数组，此时就只需要在[0, i-1]区间内找到和为k的子数组
+ * 这里考虑找和为当前位置的前缀和sum减去k，得出一个新的区间，
+ * 这个区间的出现就代表一定在[0, i-1]内存在一个和为k的子数组
+ * 之所以需要反向找是因为直接查找与暴力枚举思路一致，导致效率低下且没有利用到前缀和的特性
+ * 其次，为了进一步保证复杂度不会退化到暴力枚举的程度，可以借助哈希表结构统计当前区间中出现sum-k的次数
+ * 这个次数就代表了多少个和为k的子数组，如果哈希表中已经存在sum-k，就说明之前已经出现过一次子数组，否则就更新次数即可
+ * 未解决：
+ * 1. 为什么是[0, i-1]区间
+ * 2. 为什么需要求sum-k而不直接是k
+ * 3. 为什么要使用哈希表统计次数
+ */
+class Solution560
+{
+public:
+    int subarraySum(vector<int> &nums, int k)
+    {
+        // 统计个数
+        unordered_map<int, int> cnt;
+        // 如果整个数组的元素和为k，则也必须算一次
+        cnt[0] = 1;
+
+        int sum = 0;
+        int ret = 0;
+        for (auto num: nums)
+        {
+            // 求前缀和
+            sum += num;
+            // 判断当前前缀和是否等于sum - k
+            // 如果等于sum-k代表当前区间内一定存在一个和为k的子数组
+            if (cnt.find(sum - k) != cnt.end())
+            {
+                ret += cnt[sum - k];
+            }
+            // 记录当前前缀和出现的次数
+            cnt[sum]++;
+        }
+
+        return ret;
+    }
+};
