@@ -122,7 +122,7 @@ int main44()
     int n = 0, m = 0;
     while (cin >> n >> m)
     {
-        vector<vector<int> > arr(n, vector<int>(m, 0));
+        vector<vector<int>> arr(n, vector<int>(m, 0));
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < m; j++)
@@ -225,13 +225,13 @@ int mainDP35()
     while (cin >> n >> m >> q)
     {
         // 原数组
-        vector<vector<long long> > arr(n + 1);
+        vector<vector<long long>> arr(n + 1);
         for (auto &v: arr)
         {
             v.resize(m + 1);
         }
         // 和数组
-        vector<vector<long long> > sum(n + 1);
+        vector<vector<long long>> sum(n + 1);
         for (auto &v: sum)
         {
             v.resize(m + 1);
