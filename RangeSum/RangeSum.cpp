@@ -532,7 +532,7 @@ public:
 /*
  * 本题的关键就是理解题意以及对边界的处理，剩余的就是二维前缀和的基本构建和使用
  */
-class Solution
+class Solution1314
 {
 public:
     vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int k)
