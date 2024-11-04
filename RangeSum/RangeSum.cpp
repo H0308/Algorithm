@@ -6,8 +6,8 @@
 #include <unordered_map>
 using namespace std;
 
-// 卡码网KamaCoder.区间和：暴力解法
-int main1()
+// 卡码网KamaCoder58.区间和：暴力解法
+int main58_1()
 {
     // 解除同步
     std::ios::sync_with_stdio(false);
@@ -40,8 +40,8 @@ int main1()
     return 0;
 }
 
-// 卡码网KamaCoder.区间和：前缀和解法——写法1
-int main2()
+// 卡码网KamaCoder58.区间和：前缀和解法——写法1
+int main58_2()
 {
     // 解除同步
     std::ios::sync_with_stdio(false);
@@ -72,8 +72,8 @@ int main2()
     return 0;
 }
 
-// 卡码网KamaCoder.区间和：前缀和解法——写法2
-int main3()
+// 卡码网KamaCoder58.区间和：前缀和解法——写法2
+int main58_3()
 {
     // 解除同步
     std::ios::sync_with_stdio(false);
@@ -110,6 +110,74 @@ int main3()
         {
             cout << sum[b] - sum[a - 1] << endl;
         }
+    }
+
+    return 0;
+}
+
+
+// 卡码网KamaCoder44.开发商购买土地
+int main44()
+{
+    int n = 0, m = 0;
+    while (cin >> n >> m)
+    {
+        vector<vector<int> > arr(n, vector<int>(m, 0));
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                cin >> arr[i][j];
+            }
+        }
+
+        int minNum = INT_MAX;
+        // 统计总和
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                sum += arr[i][j];
+            }
+        }
+
+        // 横向划分
+        // 注意保证至少有一方有一块区域
+        for (int i = 0; i < n - 1; i++)
+        {
+            int sumA = 0;
+            // 给A划分区域
+            for (int x = 0; x <= i; x++)
+            {
+                for (int y = 0; y < m; y++)
+                {
+                    sumA += arr[x][y];
+                }
+            }
+
+            int sumB = sum - sumA;
+            minNum = min(minNum, abs(sumA - sumB));
+        }
+
+        // 纵向划分
+        for (int j = 0; j < m - 1; j++)
+        {
+            int sumA = 0;
+            // 给A划分区域
+            for (int x = 0; x < n; x++)
+            {
+                for (int y = 0; y <= j; y++)
+                {
+                    sumA += arr[x][y];
+                }
+            }
+
+            int sumB = sum - sumA;
+            minNum = min(minNum, abs(sumA - sumB));
+        }
+
+        cout << minNum << endl;
     }
 
     return 0;
@@ -381,5 +449,124 @@ public:
         }
 
         return ret;
+    }
+};
+
+// 力扣974.和可被K整除的子数组
+/*
+ * 本题根据同余定理可以将题目转化为在前缀和数组中找tempSum%k==sum%k的子数组，注意取余运算的修正
+ * 剩余思路与上题基本一致
+ */
+class Solution974
+{
+public:
+    int subarraysDivByK(vector<int> &nums, int k)
+    {
+        // 统计前缀和出现的次数
+        unordered_map<int, int> cnt;
+        cnt[0] = 1;
+
+        int sum = 0;
+        int ret = 0;
+        for (auto num: nums)
+        {
+            // 指定区间的前缀和
+            sum += num;
+            // 取余运算修正
+            int rest = (sum % k + k) % k;
+            // 如果当前rest存在于哈希表，说明满足sum%k等于之前的余数beforeSum % k
+            if (cnt.find(rest) != cnt.end())
+            {
+                ret += cnt[rest];
+            }
+
+            cnt[rest]++;
+        }
+
+        return ret;
+    }
+};
+
+// 力扣525.连续数组
+class Solution525
+{
+public:
+    int findMaxLength(vector<int> &nums)
+    {
+        unordered_map<int, int> cnt;
+        cnt[0] = -1;
+
+        // 将数组所有的0置为-1
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] == 0)
+            {
+                nums[i] = -1;
+            }
+        }
+
+        // 在数组中找前缀和为sum的最长子数组
+        int sum = 0;
+        int ret = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            // 求前缀和
+            sum += nums[i];
+
+            // 哈希表中存储的是前缀和，当遇到了前缀和为sum时就更新当前长度
+            if (cnt.find(sum) != cnt.end())
+            {
+                ret = max(ret, i - cnt[sum]);
+            }
+            else
+            {
+                cnt[sum] = i;
+            }
+        }
+
+        return ret;
+    }
+};
+
+// 力扣1314.矩阵区域和
+/*
+ * 本题的关键就是理解题意以及对边界的处理，剩余的就是二维前缀和的基本构建和使用
+ */
+class Solution
+{
+public:
+    vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int k)
+    {
+        int m = mat.size();
+        int n = mat[0].size();
+        // 构建前缀和数组
+        vector<vector<int>> sum(m + 1, vector<int>(n + 1));
+
+        for (int i = 1; i <= m; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + mat[i - 1][j - 1];
+            }
+        }
+
+        // 使用前缀和数组
+        int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        vector<vector<int>> ans(m, vector<int>(n));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                x1 = max(0, i - k) + 1;
+                y1 = max(0, j - k) + 1;
+                x2 = min(m - 1, i + k) + 1;
+                y2 = min(n - 1, j + k) + 1;
+
+                // 求和
+                ans[i][j] = sum[x2][y2] - sum[x1 - 1][y2] - sum[x2][y1 - 1] + sum[x1 - 1][y1 - 1];
+            }
+        }
+
+        return ans;
     }
 };
