@@ -3,10 +3,12 @@
 //
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 using namespace std;
 
 // 力扣1576.替换所有的问号
-class Solution1576
+// 写法1
+class Solution1576_1
 {
 public:
     string modifyString(string s)
@@ -59,6 +61,32 @@ public:
     }
 };
 
+// 写法2
+class Solution1576_2
+{
+public:
+    string modifyString(string s)
+    {
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (s[i] == '?')
+            {
+                for (char j = 'a'; j <= 'z'; j++)
+                {
+                    if ((i - 1 < 0 || j != s[i - 1]) && (i + 1 >= s.size() || j != s[i + 1]))
+                    {
+                        s[i] = j;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return s;
+    }
+};
+
+
 // 力扣495.提莫攻击
 class Solution495
 {
@@ -84,6 +112,53 @@ public:
         return time;
     }
 };
+
+// 力扣6.Z字形变换
+class Solution6
+{
+public:
+    string convert(string s, int numRows)
+    {
+        if (numRows == 1)
+        {
+            return s;
+        }
+        // 计算公差
+        int d = 2 * numRows - 2;
+        string ret;
+
+        // 处理第一行
+        for (int j = 0; j < s.size(); j += d)
+        {
+            ret.push_back(s[j]);
+        }
+
+        // 处理中间行
+        for (int k = 1; k < numRows - 1; k++)
+        {
+            for (int i = k, j = d - k; i < s.size() || j < s.size(); i += d, j += d)
+            {
+                if (i < s.size())
+                {
+                    ret += s[i];
+                }
+                if (j < s.size())
+                {
+                    ret += s[j];
+                }
+            }
+        }
+
+        // 处理最后一行
+        for (int j = numRows - 1; j < s.size(); j += d)
+        {
+            ret.push_back(s[j]);
+        }
+
+        return ret;
+    }
+};
+
 
 // 力扣59.螺旋矩阵 II
 // 写法1
@@ -249,5 +324,70 @@ public:
         }
 
         return ret;
+    }
+};
+
+
+// 力扣38.外观数列
+class Solution38
+{
+public:
+    string countAndSay(int n)
+    {
+        string ret = "1";
+        for (int i = 1; i < n; i++)
+        {
+            string temp;
+            // 统计个数
+            for (int left = 0, right = 0; right < ret.size(); left = right)
+            {
+                // 持续寻找相同的字符
+                while (right < ret.size() && ret[left] == ret[right])
+                {
+                    right++;
+                }
+
+                // 更新字符串
+                temp += to_string(right - left) + ret[left];
+            }
+            ret = temp;
+        }
+        return ret;
+    }
+};
+
+// 力扣1419.数青蛙
+class Solution
+{
+public:
+    int minNumberOfFrogs(string croakOfFrogs)
+    {
+        string t = "croak";
+        int n = t.size();
+        vector<int> hash(n); // ⽤数组来模拟哈希表
+        unordered_map<char, int> index; //[x, x这个字符对应的下标]
+        for (int i = 0; i < n; i++)
+            index[t[i]] = i;
+        for (auto ch: croakOfFrogs)
+        {
+            if (ch == 'c')
+            {
+                if (hash[n - 1] != 0)
+                    hash[n - 1]--;
+                hash[0]++;
+            }
+            else
+            {
+                int i = index[ch];
+                if (hash[i - 1] == 0)
+                    return -1;
+                hash[i - 1]--;
+                hash[i]++;
+            }
+        }
+        for (int i = 0; i < n - 1; i++)
+            if (hash[i] != 0)
+                return -1;
+        return hash[n - 1];
     }
 };
