@@ -5,6 +5,86 @@
 #include <vector>
 using namespace std;
 
+// 力扣1576.替换所有的问号
+class Solution1576
+{
+public:
+    string modifyString(string s)
+    {
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (s[i] == '?')
+            {
+                for (char j = 'a'; j <= 'z'; j++)
+                {
+                    if (i - 1 >= 0 && i + 1 < s.size() && j != s[i - 1] && j != s[i + 1])
+                    {
+                        if (s[i + 1] == '?')
+                        {
+                            s[i] = j++;
+                            break;
+                        }
+                        else
+                        {
+                            s[i] = j;
+                            break;
+                        }
+                    }
+                    else if (i - 1 < 0 && i + 1 < s.size())
+                    {
+                        if (j != s[i + 1])
+                        {
+                            s[i] = j;
+                            break;
+                        }
+                    }
+                    else if (i - 1 >= 0 && i + 1 >= s.size())
+                    {
+                        if (j != s[i - 1])
+                        {
+                            s[i] = j;
+                            break;
+                        }
+                    }
+                    else if (i - 1 < 0 && i + 1 >= s.size())
+                    {
+                        s[i] = j;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return s;
+    }
+};
+
+// 力扣495.提莫攻击
+class Solution495
+{
+public:
+    int findPoisonedDuration(vector<int> &timeSeries, int duration)
+    {
+        int time = 0;
+        for (int i = 0; i < timeSeries.size(); i++)
+        {
+            if (i + 1 < timeSeries.size() && timeSeries[i + 1] - timeSeries[i] >= duration)
+            {
+                time += duration;
+            }
+            else if (i + 1 < timeSeries.size() && timeSeries[i + 1] - timeSeries[i] < duration)
+            {
+                time += timeSeries[i + 1] - timeSeries[i];
+            }
+        }
+
+        // 最后一次攻击会持续到结尾
+        time += duration;
+
+        return time;
+    }
+};
+
 // 力扣59.螺旋矩阵 II
 // 写法1
 class Solution59_1
@@ -77,32 +157,34 @@ public:
 };
 
 // 写法2_1
-class Solution59_2 
+class Solution59_2
 {
 public:
-    vector<vector<int>> generateMatrix(int n) 
-{
+    vector<vector<int>> generateMatrix(int n)
+    {
         // 处理结果
         vector<vector<int>> ret(n);
-        for(auto& v : ret) v.resize(n);
+        for (auto &v: ret)
+            v.resize(n);
         int count = 1;
         int left = 0, top = 0;
         int right = n - 1, bottom = n - 1;
-        while(left <= right && top <= bottom) {
-            for(int i = left; i <= right; i++) 
+        while (left <= right && top <= bottom)
+        {
+            for (int i = left; i <= right; i++)
                 ret[top][i] = count++;
             top++;
-            for(int i = top; i <= bottom; i++)
+            for (int i = top; i <= bottom; i++)
                 ret[i][right] = count++;
             right--;
-            for(int i = right; i >= left; i--)
+            for (int i = right; i >= left; i--)
                 ret[bottom][i] = count++;
             bottom--;
-            for(int i = bottom; i >= top; i--)
+            for (int i = bottom; i >= top; i--)
                 ret[i][left] = count++;
             left++;
         }
-        
+
         return ret;
     }
 };
