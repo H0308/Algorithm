@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <unordered_map>
 using namespace std;
 
@@ -88,7 +89,8 @@ public:
 
 
 // 力扣495.提莫攻击
-class Solution495
+// 写法1
+class Solution495_1
 {
 public:
     int findPoisonedDuration(vector<int> &timeSeries, int duration)
@@ -113,8 +115,36 @@ public:
     }
 };
 
+// 写法2
+class Solution495_2
+{
+public:
+    int findPoisonedDuration(vector<int> &timeSeries, int duration)
+    {
+        int time = 0;
+        for (int i = 1; i < timeSeries.size(); i++)
+        {
+            if (timeSeries[i] - timeSeries[i - 1] >= duration)
+            {
+                // 第一种情况
+                time += duration;
+            }
+            else
+            {
+                time += timeSeries[i] - timeSeries[i - 1];
+            }
+        }
+
+        // 最后一种情况
+        time += duration;
+
+        return time;
+    }
+};
+
 // 力扣6.Z字形变换
-class Solution6
+// 暴力模拟
+class Solution6_1
 {
 public:
     string convert(string s, int numRows)
@@ -123,116 +153,109 @@ public:
         {
             return s;
         }
-        // 计算公差
-        int d = 2 * numRows - 2;
-        string ret;
+        // 获取字符串的长度
+        int sz = s.size();
+        // 获取周期
+        int cycle = ceil((float) sz / (2 * numRows - 2)) * (numRows - 1);
+        // 构建二维矩阵
+        vector<vector<char>> matrix(numRows, vector<char>(cycle));
 
-        // 处理第一行
-        for (int j = 0; j < s.size(); j += d)
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        // 填充二维矩阵
+        while (k < sz)
         {
-            ret.push_back(s[j]);
+            // 填充竖向列
+            while (i < numRows)
+            {
+                if (k >= sz)
+                    break;
+                matrix[i][j] = s[k++];
+                i++;
+            }
+
+            i -= 2;
+            // 填充斜向上
+            while (i > 0)
+            {
+                if (k >= sz)
+                    break;
+                j++;
+                matrix[i][j] = s[k++];
+                i--;
+            }
+
+            j++;
+        }
+
+        // 遍历二维矩阵
+        string ret;
+        for (auto &v: matrix)
+        {
+            for (auto &ch: v)
+            {
+                if (ch == '\0')
+                    continue;
+                ret += ch;
+            }
+        }
+
+        return ret;
+    }
+};
+
+// 找规律
+class Solution6_2
+{
+public:
+    string convert(string s, int numRows)
+    {
+        if (numRows == 1)
+        {
+            return s;
+        }
+
+        // 获取字符串长度
+        int sz = s.size();
+        // 获取公差
+        int d = 2 * numRows - 2;
+
+        string ret;
+        // 处理第一行
+        for (int i = 0; i < sz; i += d)
+        {
+            ret += s[i];
         }
 
         // 处理中间行
         for (int k = 1; k < numRows - 1; k++)
         {
-            for (int i = k, j = d - k; i < s.size() || j < s.size(); i += d, j += d)
+            for (int x = k, y = d - k; x < sz || y < sz; x += d, y += d)
             {
-                if (i < s.size())
+                if (x < sz)
                 {
-                    ret += s[i];
+                    ret += s[x];
                 }
-                if (j < s.size())
+                if (y < sz)
                 {
-                    ret += s[j];
+                    ret += s[y];
                 }
             }
         }
 
         // 处理最后一行
-        for (int j = numRows - 1; j < s.size(); j += d)
+        for (int i = numRows - 1; i < sz; i += d)
         {
-            ret.push_back(s[j]);
+            ret += s[i];
         }
 
         return ret;
     }
 };
-
 
 // 力扣59.螺旋矩阵 II
-// 写法1
-class Solution59_1
-{
-public:
-    vector<vector<int>> generateMatrix(int n)
-    {
-        // 控制横向坐标和纵向坐标
-        int startx = 0, starty = 0;
-        // 控制行和列
-        int row = 0, col = 0;
-        // 控制偏移量
-        int offset = 1;
-        // 控制填充数值
-        int count = 1;
-        // 结果矩阵
-        vector<vector<int>> ret(n);
-        for (size_t i = 0; i < n; i++)
-        {
-            ret[i].resize(n, 0);
-        }
-
-        // vector<vector<int>> ret(n, vector<int>(n, 0));
-
-        // 控制轮转圈数
-        int cycle = n / 2;
-        while (cycle--)
-        {
-            // 左闭右开方式控制每条边
-            // 处理横向第一条边
-            for (col = starty; col < n - offset; col++)
-            {
-                // 填充数值
-                ret[startx][col] = count++;
-            }
-
-            // 处理纵向第一条边
-            for (row = startx; row < n - offset; row++)
-            {
-                // 填充数值
-                ret[row][col] = count++;
-            }
-
-            // 处理横向第二条边
-            for (; col > starty; col--)
-            {
-                // 填充数值
-                ret[row][col] = count++;
-            }
-
-            // 处理纵向第二条边
-            for (; row > startx; row--)
-            {
-                // 填充数值
-                ret[row][col] = count++;
-            }
-
-            // 控制圈
-            startx++;
-            starty++;
-            offset++;
-        }
-
-        // 如果n为奇数时填充中间的数值
-        if (n % 2)
-            ret[startx][starty] = count;
-
-        return ret;
-    }
-};
-
-// 写法2_1
-class Solution59_2
+class Solution59
 {
 public:
     vector<vector<int>> generateMatrix(int n)
@@ -329,7 +352,38 @@ public:
 
 
 // 力扣38.外观数列
-class Solution38
+// 递归版本
+class Solution38_1
+{
+public:
+    string countAndSay(int n)
+    {
+        if (n == 1)
+        {
+            return "1";
+        }
+
+        string ret = countAndSay(n - 1);
+        string temp;
+        temp.clear();
+        for (int left = 0, right = 0; right < ret.size(); left = right)
+        {
+            while (ret[left] == ret[right])
+            {
+                right++;
+            }
+
+            temp += to_string(right - left) + ret[left];
+        }
+
+        ret = temp;
+
+        return ret;
+    }
+};
+
+// 迭代版本
+class Solution38_2
 {
 public:
     string countAndSay(int n)
@@ -362,32 +416,45 @@ class Solution
 public:
     int minNumberOfFrogs(string croakOfFrogs)
     {
-        string t = "croak";
-        int n = t.size();
-        vector<int> hash(n); // ⽤数组来模拟哈希表
-        unordered_map<char, int> index; //[x, x这个字符对应的下标]
-        for (int i = 0; i < n; i++)
-            index[t[i]] = i;
-        for (auto ch: croakOfFrogs)
+        string s = "croak";
+        int sz = s.size();
+        // 创建哈希表用于字符个数的映射
+        vector<int> hash(sz);
+
+        // 创建哈希表用于下标映射
+        unordered_map<char, int> index;
+        for (int i = 0; i < s.size(); i++)
+        {
+            index[s[i]] = i;
+        }
+
+        // 遍历所给字符串
+        for (auto ch : croakOfFrogs)
         {
             if (ch == 'c')
             {
-                if (hash[n - 1] != 0)
-                    hash[n - 1]--;
-                hash[0]++;
+                // 判断k字符个数是否为0
+                if (hash[index[ch] + sz - 1])
+                {
+                    hash[index[ch] + sz - 1]--;
+                }
+                hash[index[ch]]++;
             }
             else
             {
-                int i = index[ch];
-                if (hash[i - 1] == 0)
+                // 其他四个字符
+                if (hash[index[ch] - 1] == 0)
                     return -1;
-                hash[i - 1]--;
-                hash[i]++;
+                hash[index[ch] - 1]--;
+                hash[index[ch]]++;
             }
         }
-        for (int i = 0; i < n - 1; i++)
+
+        // 结束后判断是否存在除k以外的字符的个数非0
+        for (int i = 0; i < hash.size() - 1; i++)
             if (hash[i] != 0)
                 return -1;
-        return hash[n - 1];
+
+        return hash[index['k']];
     }
 };
