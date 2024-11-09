@@ -132,13 +132,13 @@ public:
     }
 };
 
-// 260.只出现一次的数字Ⅲ
-class Solution260
+// 力扣260.只出现一次的数字Ⅲ
+class Solution260_1
 {
 public:
     vector<int> singleNumber(vector<int> &nums)
     {
-        int ans = 0;
+        size_t ans = 0;
         // 先获取到两个出现一次的数字
         for (auto n: nums)
         {
@@ -148,9 +148,7 @@ public:
         // 根据结果ans对原数据进行分组
         vector<int> ret(2);
         // 取出最低位的1所在的位置
-        // int pos = ans & (-ans);
-        // 注意防止溢出
-        int pos = (ans == INT_MIN) ? ans : ans & (-ans);
+        int pos = ans & (-ans);
         // 分组
         for (int i = 0; i < nums.size(); i++)
         {
@@ -162,6 +160,33 @@ public:
             {
                 ret[1] ^= nums[i];
             }
+        }
+
+        return ret;
+    }
+};
+
+// 写法2
+class Solution260_2
+{
+public:
+    vector<int> singleNumber(vector<int> &nums)
+    {
+        size_t ans = 0;
+        // 先获取到两个出现一次的数字
+        for (auto n: nums)
+        {
+            ans ^= n;
+        }
+
+        // 根据结果ans对原数据进行分组
+        vector<int> ret(2);
+        // 取出最低位的1所在的位置
+        int pos = ans & (-ans);
+        // 分组
+        for (auto n: nums)
+        {
+            ret[(n & pos) != 0] ^= n;
         }
 
         return ret;
@@ -344,6 +369,32 @@ public:
 
 // 力扣268.丢失的数字
 // 解法1：哈希表
+class Solution268_1
+{
+public:
+    int missingNumber(vector<int> &nums)
+    {
+        // 数组哈希
+        vector<int> hash(nums.size() + 1);
+        for (auto n: nums)
+        {
+            hash[n]++;
+        }
+
+        int index = 0;
+        for (int i = 0; i <= nums.size() + 1; i++)
+        {
+            if (!hash[i])
+            {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    }
+};
+
 // 解法2：等差数列
 class Solution268_2
 {
@@ -357,6 +408,7 @@ public:
     }
 };
 
+// 异或运算
 class Solution268_3
 {
 public:
