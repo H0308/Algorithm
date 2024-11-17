@@ -91,7 +91,7 @@ public:
  * 优化：使用map建立原节点和拷贝节点的链接
  */
 
-class Solution
+class Solution138_2
 {
 public:
     Node *copyRandomList(Node *head)
