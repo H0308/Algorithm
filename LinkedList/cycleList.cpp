@@ -54,23 +54,24 @@ public:
 
 // 力扣142.环形链表Ⅱ
 // Floyd判圈算法
-class Solution {
+class Solution142
+{
 public:
-    ListNode *detectCycle(ListNode *head) {
-        if(head == nullptr)
+    ListNode *detectCycle(ListNode *head)
+    {
+        if (head == nullptr)
             return nullptr;
-        ListNode* fast = head->next;
-        ListNode* slow = head;
+        ListNode *fast = head->next;
+        ListNode *slow = head;
 
-        while(fast && fast->next)
+        while (fast && fast->next)
         {
-
-            if(fast == slow)
+            if (fast == slow)
             {
-                ListNode* index1 = head;
-                ListNode* index2 = slow;
+                ListNode *index1 = head;
+                ListNode *index2 = slow;
 
-                while(index1 != index2)
+                while (index1 != index2)
                 {
                     index1 = index1->next;
                     index2 = index2->next;
