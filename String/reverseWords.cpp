@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-// 力扣151. 反转字符串中的单词
+// 力扣151.反转字符串中的单词
 // 解法1：暴力：取出原字符串中所有的单词并在尾部添加一个空格，最后去除多余的空格
 class Solution151_1
 {
@@ -75,6 +75,7 @@ public:
             }
         }
 
+        // 最后一个单词
         word.insert(0,
                     copy.substr(wordStart, copy.size() - wordStart + 1) + ' ');
 
