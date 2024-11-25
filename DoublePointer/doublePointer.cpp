@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 // 力扣283.移动零
@@ -149,3 +150,78 @@ public:
 };
 
 // 力扣11.盛最多水的容器
+class Solution11
+{
+public:
+    int maxArea(vector<int> &height)
+    {
+        int maxV = 0;
+        for (int left = 0, right = height.size() - 1; left < right;)
+        {
+            while (left < right && height[left] <= height[right])
+            {
+                // 必须先计算体积，防止漏计算
+                maxV = max(maxV, (right - left) * height[left]);
+                left++;
+            }
+
+            while (left < right && height[left] > height[right])
+            {
+                maxV = max(maxV, (right - left) * height[right]);
+                right--;
+            }
+        }
+
+        return maxV;
+    }
+};
+
+// 力扣611.有效三角形的个数
+// 先排序使其具有单调性
+// 固定一个第三边，但是这个第三边不能是起始位置的值
+// 固定到起始位置就无法使用单调性解决
+class Solution611
+{
+public:
+    int triangleNumber(vector<int> &nums)
+    {
+        sort(nums.begin(), nums.end());
+        int count = 0;
+        for (int i = nums.size() - 1; i >= 0; i--)
+        {
+            for (int left = 0, right = i - 1; left <= right;)
+            {
+                if (nums[right] + nums[left] > nums[i])
+                {
+                    count += right - left;
+                    right--;
+                }
+                else
+                    left++;
+            }
+        }
+
+        return count;
+    }
+};
+
+// 力扣LCR179.查找总价格为目标值的两个商品
+// 放在两数之和下面，属于两数之和双指针思路解法的正确性判断
+class SolutionLCR179
+{
+public:
+    vector<int> twoSum(vector<int> &price, int target)
+    {
+        for (int left = 0, right = price.size() - 1; left < right;)
+        {
+            if (price[left] + price[right] > target)
+                right--;
+            else if (price[left] + price[right] < target)
+                left++;
+            else
+                return {price[left], price[right]};
+        }
+
+        return {};
+    }
+};
