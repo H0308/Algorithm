@@ -225,3 +225,102 @@ public:
         return {};
     }
 };
+
+// 力扣15.三数之和
+// 本题与前面有效三角形的思路一致，但是需要进行去重
+// 因为已经排序，所以对于和为0的三个数来说，一旦出现重复
+// 则一定在一起，所以可以一直跳过直到不出现重复数值
+class Solution15
+{
+public:
+    vector<vector<int>> threeSum(vector<int> &nums)
+    {
+        // 记录结果
+        vector<vector<int>> ret;
+        // 排序数组
+        sort(nums.begin(), nums.end());
+
+        // 枚举最大值
+        for (int i = nums.size() - 1; i >= 0;)
+        {
+            for (int left = 0, right = i - 1; left < right;)
+            {
+                int sum = nums[left] + nums[right] + nums[i];
+                if (sum < 0)
+                    left++;
+                else if (sum > 0)
+                    right--;
+                else
+                {
+                    ret.push_back({nums[left], nums[right], nums[i]});
+                    // 更新到新加数
+                    left++;
+                    right--;
+                    // 对left和right区间中去重，注意越界问题的处理
+                    while (left < right && nums[left] == nums[left - 1])
+                        left++;
+                    while (right > left && nums[right] == nums[right + 1])
+                        right--;
+                }
+            }
+
+            i--;
+            // 对基数去重，注意越界问题的处理
+            while (i >= 0 && nums[i] == nums[i + 1])
+                i--;
+        }
+
+        return ret;
+    }
+};
+
+// 力扣18.四数之和
+// 本题和上题思路一致，但是因为是四个数，所以需要通过i和j枚举两个值
+// nums[i] + nums[j] = -(nums[left] + nums[right])
+class Solution
+{
+public:
+    vector<vector<int>> fourSum(vector<int> &nums, int target)
+    {
+        vector<vector<int>> ret;
+        sort(nums.begin(), nums.end());
+        int sz = nums.size();
+        for (int i = 0; i < sz;)
+        {
+            //  三数之和思路
+            for (int j = i + 1; j < sz;)
+            {
+                // 注意整型范围
+                long long rest = (long long)target - nums[i] - nums[j];
+                int left = j + 1;
+                int right = sz - 1;
+                // 两数之和思路
+                while (left < right)
+                {
+                    int sum = nums[left] + nums[right];
+                    if (sum > rest)
+                        right--;
+                    else if (sum < rest)
+                        left++;
+                    else
+                    {
+                        ret.push_back({nums[i], nums[j], nums[left], nums[right]});
+                        left++;
+                        right--;
+                        while (left < right && nums[left] == nums[left - 1])
+                            left++;
+                        while (left < right && nums[right] == nums[right + 1])
+                            right--;
+                    }
+                }
+                j++;
+                while (j < sz && nums[j] == nums[j - 1])
+                    j++;
+            }
+            i++;
+            while (i < sz && nums[i] == nums[i - 1])
+                i++;
+        }
+        return ret;
+    }
+};
