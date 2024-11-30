@@ -277,7 +277,7 @@ public:
 // 力扣18.四数之和
 // 本题和上题思路一致，但是因为是四个数，所以需要通过i和j枚举两个值
 // nums[i] + nums[j] = -(nums[left] + nums[right])
-class Solution
+class Solution18
 {
 public:
     vector<vector<int>> fourSum(vector<int> &nums, int target)
