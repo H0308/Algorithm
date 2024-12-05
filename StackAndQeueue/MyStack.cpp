@@ -6,14 +6,14 @@
 using namespace std;
 
 // 力扣225.用队列实现栈
-class MyStack
+class MyStack225_1
 {
 private:
     queue<int> q1;
     queue<int> q2;
 
 public:
-    MyStack()
+    MyStack225_1()
     {
     }
 
@@ -71,5 +71,58 @@ public:
     bool empty()
     {
         return q1.empty() && q2.empty();
+    }
+};
+
+// 仅用一个队列，但是此时就需要一个变量用于统计当前队列的元素个数
+// 遍历过程中，将元素从尾部弹出，再从头部插入直到最后一个元素为止
+class MyStack225_2
+{
+public:
+    queue<int> que;
+
+    MyStack225_2()
+    {
+
+    }
+
+    void push(int x)
+    {
+        que.push(x);
+    }
+
+    int pop()
+    {
+        int size = que.size();
+        size--;
+        while (size--)
+        {
+            que.push(que.front()); // 将队列头部的元素（除了最后一个元素外） 重新添加到队列尾部
+            que.pop();
+        }
+        int result = que.front(); // 此时弹出的元素顺序就是栈的顺序了
+        que.pop();
+        return result;
+    }
+
+    int top()
+    {
+        int size = que.size();
+        size--;
+        while (size--)
+        {
+            // 将队列头部的元素（除了最后一个元素外） 重新添加到队列尾部
+            que.push(que.front());
+            que.pop();
+        }
+        int result = que.front(); // 此时获得的元素就是栈顶的元素了
+        que.push(que.front());    // 将获取完的元素也重新添加到队列尾部，保证数据结构没有变化
+        que.pop();
+        return result;
+    }
+
+    bool empty()
+    {
+        return que.empty();
     }
 };
