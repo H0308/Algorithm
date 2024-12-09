@@ -17,9 +17,7 @@ public:
         // 弹出指定个数的元素
         int i = nums.size() - k;
         while (i--)
-        {
             que.pop();
-        }
 
         return que.top();
     }
