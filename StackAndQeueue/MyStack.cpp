@@ -61,9 +61,7 @@ public:
     {
         // 找到非空队列的对头元素
         if (!q1.empty())
-        {
             return q1.back();
-        }
 
         return q2.back();
     }
