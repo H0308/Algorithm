@@ -49,7 +49,7 @@ public:
         front++;
         num--;
         if (front >= maxLen)
-            front = (front - 1) % maxLen;
+            front = front % maxLen;
 
         return true;
     }
