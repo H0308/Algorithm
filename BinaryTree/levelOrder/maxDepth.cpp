@@ -32,7 +32,32 @@ struct TreeNode
 };
 
 // 力扣104.二叉树的最大深度
-class Solution
+// 后序遍历思路
+/*
+ * 二叉树的最大深度实际上应该用前序遍历进行求解，而后序遍历一般用来求二叉树的高度
+ * 但是因为二叉树的最大深度就是根节点的高度
+ * 而后序遍历的思路就是将当前层的高度返回给上一层，由上一层统计当前高度，一直到根节点
+ * 此时根节点的高度就是二叉树的最大深度
+ */
+class Solution104_1
+{
+public:
+    int maxDepth(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+        if (!root->left && !root->right)
+            return 1;
+
+        int leftHeight = maxDepth(root->left);
+        int rightHeight = maxDepth(root->right);
+
+        return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
+    }
+};
+
+// 层序遍历思路
+class Solution104_2
 {
 public:
     int maxDepth(TreeNode *root)
