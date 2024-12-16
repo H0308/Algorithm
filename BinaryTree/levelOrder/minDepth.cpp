@@ -31,9 +31,33 @@ struct TreeNode
     {}
 };
 
-
 // 力扣111.二叉树的最小深度
-class Solution
+// 后序遍历
+// 在最大深度中取出最小值即为二叉树的最小深度
+// 注意处理不存在右子树或者左子树的情况
+class Solution111_1
+{
+public:
+    int minDepth(TreeNode *root)
+    {
+        if (!root)
+            return 0;
+
+        int leftHeight = minDepth(root->left);
+        int rightHeight = minDepth(root->right);
+
+        int depth = 0;
+        if (leftHeight && rightHeight)
+            depth = min(leftHeight, rightHeight);
+        else if (leftHeight || rightHeight)
+            depth = leftHeight ? leftHeight : rightHeight;
+
+        return depth + 1;
+    }
+};
+
+// 层序遍历
+class Solution111_2
 {
 public:
     int minDepth(TreeNode *root)
