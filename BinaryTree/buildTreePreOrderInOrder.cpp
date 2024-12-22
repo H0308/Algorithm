@@ -36,7 +36,7 @@ struct TreeNode
  * 本题和上题思路基本一致，只是使用的数组不同而已
  * 注意，可以使用前序或者后序+中序构建二叉树，但是不能使用前序+后序构建二叉树，因为此时构建的二叉树不唯一
  */
-class Solution
+class Solution105
 {
 public:
     TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
