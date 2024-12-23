@@ -6,6 +6,31 @@
 #include <algorithm>
 using namespace std;
 
+// 力扣80.删除有序数组中的重复项Ⅱ
+// 双指针，根据下标相差为2控制只保留两个重复数字
+class Solution80
+{
+public:
+    int removeDuplicates(vector<int>& nums)
+    {
+        if(nums.size() <= 2)
+            return nums.size();
+        int slow = 2, fast = 2;
+
+        while(fast < nums.size())
+        {
+            if(nums[slow - 2] != nums[fast])
+            {
+                nums[slow] = nums[fast];
+                slow++;
+            }
+            fast++;
+        }
+
+        return slow;
+    }
+};
+
 // 力扣283.移动零
 class Solution283
 {
