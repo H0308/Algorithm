@@ -32,6 +32,7 @@ struct TreeNode
 };
 
 // 力扣98.验证二叉搜索树
+// 额外空间
 /*
  * 本题最直接的思路就是根据题目给出的规则模拟，但是不能仅仅只判断单棵子树是否满足二叉搜索树的条件，例如下面的一棵树：
  *
@@ -45,7 +46,7 @@ struct TreeNode
  * 通过上面的例子可以看成，仅仅只判断每一棵子树是否是二叉搜索树不一定保证本题可以通过
  * 最简单的做法就是将二叉树的中序遍历结果插入到数组中，判断数组中的元素是否是升序，如果是那么当前树就是二叉搜索树，否则就不是
  */
-class Solution98
+class Solution98_1
 {
 public:
     void traversal(TreeNode* root, vector<int>& ret)
@@ -69,5 +70,27 @@ public:
                 return false;
 
         return true;
+    }
+};
+
+// 使用一个节点记录前一个节点的数值，在遍历二叉树的过程中直接进行比较
+class Solution98_2
+{
+public:
+    TreeNode* pre = nullptr;
+    bool isValidBST(TreeNode *root)
+    {
+        if(!root)
+            return true;
+
+        bool left = isValidBST(root->left);
+        if(pre && pre->val >= root->val)
+            return false;
+
+        // 更新pre为前一个节点
+        pre = root;
+        bool right = isValidBST(root->right);
+
+        return left && right;
     }
 };
