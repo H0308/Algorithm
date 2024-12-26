@@ -50,7 +50,6 @@ public:
 
         return false; // 循环走完说明没找到
     }
-
     TreeNode *deleteNode(TreeNode *root, int key)
     {
         // 根节点为空不执行或者不存在指定的key则返回空删除
@@ -62,96 +61,72 @@ public:
 
         // 先查找到指定节点
         TreeNode *cur = root;
-        TreeNode *prev = nullptr;
+        TreeNode *prev = prev;
 
         while (cur)
         {
-            prev = cur;
+            // 记录当前节点
             if (cur->val > key)
             {
+                // 注意prev的位置要在if里面
+                // 防止出现下一次cur为待删除的节点时，prev也变成了当前待删除的节点
+                prev = cur;
                 cur = cur->left;
             }
             else if (cur->val < key)
             {
+                prev = cur;
                 cur = cur->right;
             }
             else // 相等时执行删除
             {
-                // 如果删除的节点只有一个孩子，那么直接让父亲链接该孩子即可
-                // 找到，删除
-                if (cur->right == nullptr)
+                // 第一种和第二种情况
+                // 如果当前节点的左孩子为空
+                if (!cur->left)
                 {
-                    // 考虑根节点的情况
-                    if (cur == root)
-                    {
-                        root = cur->left;
-                    }
-                    else
-                    {
-                        if (prev->right == cur)
-                        {
-                            prev->right = cur->left;
-                        }
-                        else if (prev->left == cur)
-                        {
-                            prev->left = cur->left;
-                        }
-                    }
-                    delete cur;
-                    break;
-                }
-                else if (cur->left == nullptr)
-                {
-                    // 考虑根节点的情况
-                    if (cur == root)
-                    {
+                    // 注意根节点为待删除的数值时需要单独考虑
+                    if(cur == root)
                         root = cur->right;
-                    }
-                    else
-                    {
-                        // 找到孩子的位置后链接
-                        if (prev->left == cur)
-                        {
-                            prev->left = cur->right;
-                        }
-                        else if (prev->right == cur)
-                        {
-                            prev->right = cur->right;
-                        }
-                    }
+                    else if (prev->left == cur) // 判断当前节点是其父亲节点的左孩子还是右孩子
+                        prev->left = cur->right;
+                    else if (prev->right == cur)
+                        prev->right = cur->right;
                     delete cur;
-                    break;
+                }
+                else if (!cur->right)
+                {
+                    // 注意根节点为待删除的数值时需要单独考虑
+                    if(cur == root)
+                        root = cur->left;
+                    else if (prev->left == cur)
+                        prev->left = cur->left;
+                    else if (prev->right == cur)
+                        prev->right = cur->left;
+                    delete cur;
                 }
                 else
                 {
-                    // 两个孩子节点
-                    // 找出适合的替代节点，选择右子树的最左孩子
-                    TreeNode *replaceNodeP = cur;
+                    // 第三种情况
+                    // 先找到待删除节点的右孩子的最左孩子
                     TreeNode *replaceNode = cur->right;
+                    TreeNode *replaceNodePrev = cur;
 
-                    // 一直向左子树走直到找到替代节点
                     while (replaceNode->left)
                     {
-                        replaceNodeP = replaceNode;
+                        replaceNodePrev = replaceNode;
                         replaceNode = replaceNode->left;
                     }
 
-                    // 将replaceNode的值覆盖需要删除的节点
+                    // 将待删除节点的值替换为右孩子的最左孩子的值
                     cur->val = replaceNode->val;
-                    // 将replaceNode的父亲指向替换节点的孩子
-                    if (replaceNodeP->left == replaceNode)
-                    {
-                        // 找的右子树的最左节点，一定没有左孩子
-                        replaceNodeP->left = replaceNode->right;
-                    }
-                    else
-                    {
-                        // replaceNodeP与待删除节点时同一个节点
-                        replaceNodeP->right = replaceNode->right;
-                    }
+                    if (replaceNode == replaceNodePrev->left)
+                        replaceNodePrev->left = replaceNode->right;
+                    else if (replaceNode == replaceNodePrev->right)
+                        replaceNodePrev->right = replaceNode->right;
+
                     delete replaceNode;
-                    break;
                 }
+                break;
             }
         }
 
