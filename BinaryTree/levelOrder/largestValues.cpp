@@ -34,9 +34,11 @@ struct TreeNode
 
 // 力扣515.在每个树行中找最大值
 // 层序遍历找出最大值即可
-class Solution {
+class Solution
+{
 public:
-    vector<int> largestValues(TreeNode* root) {
+    vector<int> largestValues(TreeNode* root)
+    {
         int count = 0;
 
         vector<int> ret;
