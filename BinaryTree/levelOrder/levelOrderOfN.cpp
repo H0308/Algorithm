@@ -26,9 +26,11 @@ public:
 
 // 力扣429.N叉树的层序遍历
 // 层序遍历的基本思路，但是注意，此时是N叉树，每个节点的孩子存在了一个vector中
-class Solution {
+class Solution
+{
 public:
-    vector<vector<int>> levelOrder(Node* root) {
+    vector<vector<int>> levelOrder(Node* root)
+    {
         int count = 0;
 
         vector<vector<int>> ret;
