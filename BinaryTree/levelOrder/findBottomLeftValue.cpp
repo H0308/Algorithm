@@ -80,10 +80,10 @@ public:
 };
 
 // 递归
-class Solution513_2
 /*
  * 递归法就是通过求深度控制最底层，在获取到最底层时就记录节点，否则继续遍历
  */
+class Solution513_2
 {
 public:
     int maxDepth = INT_MIN;
@@ -119,8 +119,6 @@ public:
             // 返回调用处时会向上一层返回
             depth--;
         }
-
-        return;
     }
 
     int findBottomLeftValue(TreeNode *root)
