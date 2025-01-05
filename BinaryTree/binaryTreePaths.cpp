@@ -101,3 +101,74 @@ public:
         return ret;
     }
 };
+
+// 去掉引用，通过函数返回完成回溯，省去手动pop_back()
+class Solution257_2
+{
+public:
+    void addchar(TreeNode *root, vector<string> &ret, vector<string> temp)
+    {
+        if (!root)
+            return;
+
+        temp.push_back(to_string(root->val));
+        addchar(root->left, ret, temp);
+        addchar(root->right, ret, temp);
+
+        if (!root->left && !root->right)
+        {
+            string backup = "";
+            for (int i = 0; i < temp.size(); i++)
+            {
+                backup += temp[i];
+                if (i != temp.size() - 1)
+                    backup += "->";
+            }
+            ret.push_back(backup);
+        }
+    }
+
+    vector<string> binaryTreePaths(TreeNode *root)
+    {
+        vector<string> ret;
+        vector<string> temp;
+
+        addchar(root, ret, temp);
+
+        return ret;
+    }
+};
+
+// string代替中间变量vector<string>
+class Solution257_3
+{
+public:
+    void addchar(TreeNode *root, vector<string> &ret, string temp)
+    {
+        if (!root)
+            return;
+
+        temp += to_string(root->val);
+        // 叶子节点单独处理
+        if(!root->left && !root->right)
+        {
+            ret.push_back(temp);
+            // 直接返回不需要加上->
+            return;
+        }
+        temp += "->";
+
+        addchar(root->left, ret, temp);
+        addchar(root->right, ret, temp);
+    }
+
+    vector<string> binaryTreePaths(TreeNode *root)
+    {
+        vector<string> ret;
+        string temp;
+
+        addchar(root, ret, temp);
+
+        return ret;
+    }
+};
