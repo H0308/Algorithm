@@ -94,3 +94,28 @@ public:
         return left && right;
     }
 };
+
+// 加剪枝
+class Solution98_3
+{
+public:
+    TreeNode* pre = nullptr;
+    bool isValidBST(TreeNode *root)
+    {
+        if(!root)
+            return true;
+
+        bool left = isValidBST(root->left);
+        // 剪枝
+        if(!left)
+            return false;
+        if(pre && pre->val >= root->val)
+            return false;
+
+        // 更新pre为前一个节点
+        pre = root;
+        bool right = isValidBST(root->right);
+
+        return left && right;
+    }
+};
