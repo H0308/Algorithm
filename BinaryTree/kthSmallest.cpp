@@ -47,7 +47,7 @@ struct Compare
     }
 };
 
-class Solution230
+class Solution230_1
 {
 public:
     void dfs(TreeNode *root, priority_queue<TreeNode *, vector<TreeNode *>, Compare> &pq)
@@ -74,7 +74,7 @@ public:
 };
 
 // 解法2：利用二叉搜索树中序遍历有序
-class Solution
+class Solution230_2
 {
 public:
     int minVal = INT_MAX;
