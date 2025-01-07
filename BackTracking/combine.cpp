@@ -28,7 +28,7 @@ public:
     vector<vector<int>> ret;
     vector<int> path;
 
-    void dfs(int n, int k, int start)
+    void backtracking(int n, int k, int start)
     {
         if (path.size() == k)
         {
@@ -40,7 +40,7 @@ public:
         {
             path.push_back(i);
             // 函数递归回到此处，path中依旧存在着两个元素，因为进入前的现场就是两个元素
-            dfs(n, k, i + 1);
+            backtracking(n, k, i + 1);
             // 恢复现场——path只有一个元素时，进入下一次循环
             path.pop_back();
         }
@@ -48,7 +48,7 @@ public:
 
     vector<vector<int>> combine(int n, int k)
     {
-        dfs(n, k, 1);
+        backtracking(n, k, 1);
         return ret;
     }
 };
@@ -65,7 +65,7 @@ public:
     vector<vector<int>> ret;
     vector<int> path;
 
-    void dfs(int n, int k, int start)
+    void backtracking(int n, int k, int start)
     {
         if (path.size() == k)
         {
@@ -78,7 +78,7 @@ public:
         {
             path.push_back(i);
             // 函数递归回到此处，path中依旧存在着两个元素，因为进入前的现场就是两个元素
-            dfs(n, k, i + 1);
+            backtracking(n, k, i + 1);
             // 恢复现场——path只有一个元素时，进入下一次循环
             path.pop_back();
         }
@@ -86,7 +86,7 @@ public:
 
     vector<vector<int>> combine(int n, int k)
     {
-        dfs(n, k, 1);
+        backtracking(n, k, 1);
         return ret;
     }
 };
