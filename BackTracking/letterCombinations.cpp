@@ -94,9 +94,7 @@ public:
         string letter = dc[digit];
 
         for (int i = 0; i < letter.size(); i++)
-        {
             backtracking(digits, index + 1, path + letter[i]);
-        }
     }
 
     vector<string> letterCombinations(string digits)
