@@ -83,17 +83,17 @@ public:
     vector<vector<string>> partition(string s)
     {
         function<bool(const string &)> isPalindrome =
-                [&](const string &s) -> bool
+                [&](const string &str) -> bool
         {
-            for (int left = 0, right = s.size() - 1; left <= right;)
+            for (int left = 0, right = str.size() - 1; left <= right;)
             {
-                while (left <= s.size() - 1 && !isalnum(s[left]))
+                while (left <= str.size() - 1 && !isalnum(str[left]))
                     left++;
-                while (right >= 0 && !isalnum(s[right]))
+                while (right >= 0 && !isalnum(str[right]))
                     right--;
 
-                if (left <= s.size() - 1 && right >= 0 &&
-                    tolower(s[left]) != tolower(s[right]))
+                if (left <= str.size() - 1 && right >= 0 &&
+                    tolower(str[left]) != tolower(str[right]))
                 {
                     return false;
                 }
@@ -106,8 +106,8 @@ public:
 
             return true;
         };
-        function<void(const string &, int)> backtracking =
-                [&](const string &s, int start) -> void
+        function<void(int)> backtracking =
+                [&](int start) -> void
         {
             if (start == s.size())
             {
@@ -123,12 +123,12 @@ public:
                 else
                     continue;
 
-                backtracking(s, i + 1);
+                backtracking(i + 1);
                 path.pop_back();
             }
         };
 
-        backtracking(s, 0);
+        backtracking(0);
 
         return ret;
     }
