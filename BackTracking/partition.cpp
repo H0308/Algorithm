@@ -4,28 +4,26 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <functional>
 
 using namespace std;
 
 // 力扣131.分割回文串
 /*
- * 本题的基本思路就是根据分割位置切割字符串，如果切割的字符串是回文串就加入到结果集中
- * 难点就在于如何切割字符串，既然是切割字符串，就需要找到切割的起始位置和终止位置
+ * 对于分割问题，首先要思考为什么不可以直接用迭代法解决
+ * 分割的本质实际上就是取出所有的结果依次判断，此时就会涉及到每一个字符都可能是下一个子串的起点，如果使用循环，在找到一处不符合要求的子串时
+ * 还需要考虑如何回归到上一个起点，整体代码的复杂程度就会很高，所以对于分割问题也需要考虑使用回溯解决
  *
- * 切割的基本思路是：如果根据当前起始位置以及终止位置切割获取到的子字符串是回文串就插入到结果集，更新起始位置，否则更新终止位置
- * 其中起始位置可以使用组合问题中的start来代替，表示下一次遍历的开始，终止位置就是当前遍历的下标i
- * 注意，判断一个子串不是回文串后不要向上返回，还需要继续判断后面字符构成的子串是否可以构成回文串
- *
- * 需要注意，本题不推荐使用拼接的方式，因为拼接的方式还需要保证结果字符串中的字符在原字符串中是连续的
- * 并且拼接的方式需要对第二次判断一个子串是否是回文串做准备，即弹出上一次的所有字符
+ * 接下来考虑如何分割，有了上面的分析，可以知道分割的本质，利用该性质可以考虑思路：固定一个起点和终点，判断中间的子字符串是否是回文串即可
+ * 因为每一次分割都需要考虑从最开始的字符开始，所以分割的起点就是第一个字符，接着依次确定终点即可
  */
-class Solution131
+class Solution131_1
 {
 public:
     vector<vector<string>> ret;
     vector<string> temp;
     // 判断是否是回文串
-    bool isPalindrome(const string& s)
+    bool isPalindrome(const string &s)
     {
         for (int left = 0, right = s.size() - 1; left <= right;)
         {
@@ -70,6 +68,66 @@ public:
 
     vector<vector<string>> partition(string s)
     {
+        backtracking(s, 0);
+
+        return ret;
+    }
+};
+
+class Solution131_2
+{
+public:
+    vector<vector<string>> ret;
+    vector<string> path;
+
+    vector<vector<string>> partition(string s)
+    {
+        function<bool(const string &)> isPalindrome =
+                [&](const string &s) -> bool
+        {
+            for (int left = 0, right = s.size() - 1; left <= right;)
+            {
+                while (left <= s.size() - 1 && !isalnum(s[left]))
+                    left++;
+                while (right >= 0 && !isalnum(s[right]))
+                    right--;
+
+                if (left <= s.size() - 1 && right >= 0 &&
+                    tolower(s[left]) != tolower(s[right]))
+                {
+                    return false;
+                }
+                else
+                {
+                    left++;
+                    right--;
+                }
+            }
+
+            return true;
+        };
+        function<void(const string &, int)> backtracking =
+                [&](const string &s, int start) -> void
+        {
+            if (start == s.size())
+            {
+                ret.push_back(path);
+                return;
+            }
+
+            for (int i = start; i < s.size(); i++)
+            {
+                string str = s.substr(start, i - start + 1);
+                if (isPalindrome(str))
+                    path.push_back(str);
+                else
+                    continue;
+
+                backtracking(s, i + 1);
+                path.pop_back();
+            }
+        };
+
         backtracking(s, 0);
 
         return ret;
