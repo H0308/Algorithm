@@ -6,6 +6,7 @@
 using namespace std;
 
 // 力扣面试题01.02.判定是否互为字符重排
+// 自己动手
 class Solution0102
 {
 public:
@@ -29,5 +30,17 @@ public:
 
 
         return true;
+    }
+};
+
+// 库函数
+class Solution0102_2
+{
+public:
+    bool CheckPermutation(string s1, string s2)
+    {
+        if(s1.size() != s2.size())
+            return false;
+        return is_permutation(s1.begin(), s1.end(), s2.begin());
     }
 };
