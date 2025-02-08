@@ -39,3 +39,27 @@ public:
 };
 
 // 优化：使用list插入
+// 因为vector插入元素时涉及到挪动数据和扩容，这两者消耗比较大，所以考虑先用list完成插入操作，再通过list构造vector返回
+class Solution {
+public:
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        // 先对原数组按照身高降序排序，相同的身高按照k升序排序
+        sort(people.begin(), people.end(), [](vector<int>& p1, vector<int>& p2)->bool{
+            return p1[0] > p2[0] || p1[0] == p2[0] && p1[1] < p2[1];
+        });
+
+        list<vector<int>> ret;
+        // 再按照k插入到新数组中
+        for(int i = 0; i < people.size(); i++)
+        {
+            int pos = people[i][1];
+            auto it = ret.begin();
+            // 找到插入位置
+            while(pos--)
+                it++;
+            ret.insert(it, people[i]);
+        }
+
+        return vector<vector<int>>(ret.begin(), ret.end());
+    }
+};
